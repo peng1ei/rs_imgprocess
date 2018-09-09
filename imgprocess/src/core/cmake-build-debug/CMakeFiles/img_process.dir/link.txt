@@ -1,0 +1,1 @@
+/usr/bin/c++  -g   CMakeFiles/img_process.dir/main.cpp.o  -o img_process -lgdal -limgtools 

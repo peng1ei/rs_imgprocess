@@ -1,0 +1,14 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/penglei/code/tmp/imgprocess/src/core/test_sub/test_sub.cpp
+test_sub.h
+/home/penglei/code/tmp/imgprocess/src/core/test_sub/test_sub.h
+
+/home/penglei/code/tmp/imgprocess/src/core/test_sub/test_sub.h
+

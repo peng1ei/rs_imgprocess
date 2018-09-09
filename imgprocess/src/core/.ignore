@@ -1,0 +1,8 @@
+#忽略cmake-build-debug文件夹
+cmake-build-debug
+
+# 忽略所有生成的备份文件
+*.*~
+
+#忽略所有.o 和 .a文件.
+*.[oa]
