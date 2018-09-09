@@ -77,11 +77,24 @@ namespace ImgTool {
         int ySize() const { return ySize_; }
         void ySize(int value) { ySize_ = value; }
 
+        void updateEnvelope(int xOff, int yOff, int xSize, int ySize) {
+            xOff_ = xOff;
+            yOff_ = yOff;
+            xSize_ = xSize;
+            ySize_ = ySize;
+        }
+
     private:
         int xOff_;   // 起始偏移量从 0 开始
         int yOff_;   // 起始偏移量从 0 开始
         int xSize_;
         int ySize_;
+    };
+
+    struct ImgBlockDims {
+        int xSize;
+        int ySize;
+        int bandCount;
     };
 
     // 光谱处理子集
@@ -90,6 +103,11 @@ namespace ImgTool {
     struct ImgSpectralSubset {
         int spectralCount() { return static_cast<int>(spectral.size()); }
         int* spectralMap() { return spectral.data(); }
+
+        std::pair<int, int*> spectralSubset() {
+            return std::pair<int, int*>(static_cast<int>(spectral.size()), spectral.data());
+        }
+
         void addSpectral(int index) {
             spectral.push_back(index);
         };
@@ -122,33 +140,48 @@ namespace ImgTool {
 
     template <typename T>
     struct ImgBlockData {
-        ImgBlockData() : m_bufData(nullptr), m_proBandMap(nullptr) {}
-        ImgBlockData(int bufXSize, int bufYSize, int proBandCount, int *proBandMap) {
-            m_bufXSize = bufXSize;
-            m_bufYSize = bufYSize;
-            m_proBandCount = proBandCount;
-            m_proBandMap = nullptr;
-            m_bufData = nullptr;
+        ImgBlockData()
+            : m_blkSpectral(), m_blkBufInterleave(ImgInterleave::BIP),
+            m_blkEnvelope(), m_blkBufData(nullptr) {
+            m_blkBufXSize = 0;
+            m_blkBufYSize = 0;
+        }
+
+        ImgBlockData(int bufXSize, int bufYSize, int proBandCount, int *proBandMap)
+            : m_blkBufInterleave(ImgInterleave::BIP),
+            m_blkEnvelope(), m_blkBufData(nullptr){
+            m_blkBufXSize = bufXSize;
+            m_blkBufYSize = bufYSize;
+
+            for (int i = 0; i < proBandCount; i++) {
+                m_blkSpectral.addSpectral(proBandMap[i]);
+            }
 
             allocateBuffer();
         }
-        virtual ~ImgBlockData() { release(); }
 
-        // todo 移动构造/赋值函数
-        ImgBlockData(const ImgBlockData &other) {
-            this->m_proBandCount = other.m_proBandCount;
-            this->m_proBandMap = other.m_proBandMap;
-            this->m_xOff = other.m_xOff;
-            this->m_yOff = other.m_yOff;
-            this->m_xSize = other.m_xSize;
-            this->m_ySize = other.m_ySize;
-            this->m_dataInterleave = other.m_dataInterleave;
-            this->m_bufXSize = other.m_bufXSize;
-            this->m_bufYSize = other.m_bufYSize;
-            m_bufData = nullptr;
+        ImgBlockData(int bufXSize, int bufYSize, ImgSpectralSubset &specSubset)
+            : m_blkSpectral(specSubset), m_blkBufInterleave(ImgInterleave::BIP),
+            m_blkEnvelope(), m_blkBufData(nullptr) {
+            m_blkBufXSize = bufXSize;
+            m_blkBufYSize = bufYSize;
 
             allocateBuffer();
-            memcpy(this->m_bufData, other.m_bufData, sizeof(T)*bufSize());
+        }
+
+        virtual ~ImgBlockData() { freeBuffer(); }
+
+        // todo 移动构造/赋值函数
+        ImgBlockData(const ImgBlockData &other)
+            : m_blkSpectral(other.m_blkSpectral),
+            m_blkBufInterleave(other.m_blkBufInterleave),
+            m_blkEnvelope(other.m_blkEnvelope),
+            m_blkBufData(nullptr) {
+            m_blkBufXSize = other.m_blkBufXSize;
+            m_blkBufYSize = other.m_blkBufYSize;
+
+            allocateBuffer();
+            memcpy(m_blkBufData, other.m_blkBufData, sizeof(T)*bufDims());
 
             std::cout << "copy ctor" << std::endl;
         }
@@ -157,100 +190,81 @@ namespace ImgTool {
             if (this == &other)
                 return *this;
 
-            this->m_proBandCount = other.m_proBandCount;
-            this->m_proBandMap = other.m_proBandMap;
-            this->m_xOff = other.m_xOff;
-            this->m_yOff = other.m_yOff;
-            this->m_xSize = other.m_xSize;
-            this->m_ySize = other.m_ySize;
-            this->m_dataInterleave = other.m_dataInterleave;
-            this->m_bufXSize = other.m_bufXSize;
-            this->m_bufYSize = other.m_bufYSize;
+            m_blkEnvelope = other.m_blkEnvelope;
+            m_blkBufInterleave = other.m_blkBufInterleave;
+            m_blkSpectral = other.m_blkSpectral;
+            m_blkBufXSize = other.m_blkBufXSize;
+            m_blkBufYSize = other.m_blkBufYSize;
+            m_blkBufData = nullptr;
 
             allocateBuffer();
-            memcpy(this->m_bufData, other.m_bufData, sizeof(T)*bufSize());
+            memcpy(m_blkBufData, other.m_blkBufData, sizeof(T)*bufDims());
 
-            std::cout << "assigment ctor" << std::endl;
-
+            std::cout << "assignment ctor" << std::endl;
             return *this;
         }
 
-
     public:
-        int xOff() const { return m_xOff; }
-        void xOff(int value) { m_xOff = value; }
-
-        int yOff() const { return m_yOff; }
-        void yOff(int value) { m_yOff = value; }
-
-        int xSize() const { return m_xSize; }
-        void xSize(int value) { m_xSize = value; }
-
-        int ySize() const { return m_ySize; }
-        void ySize(int value) { m_ySize = value; }
-
-        void getProcessBands(int &bandCount, int *bandMap = nullptr) const {
-            bandCount = m_proBandCount;
-            if (bandMap) bandMap = m_proBandMap;
+        ImgBlockEnvelope& blkEnvelope() { return m_blkEnvelope; }
+        void updateBlkEnvelope(int xOff, int yOff, int xSize, int ySize) {
+            m_blkEnvelope.updateEnvelope(xOff, yOff, xSize, ySize);
         }
 
-        void setProcessBands(int bandCount, int bandMap[]) {
-            m_proBandCount = bandCount;
-            m_proBandMap = bandMap;
+        ImgSpectralSubset& blkSpectralSubset() { return m_blkSpectral; }
+        void blkSpectralSubset(ImgSpectralSubset &spec) {
+            m_blkSpectral = spec;
         }
 
-        const ImgInterleave& dataInterleave() const { return m_dataInterleave; }
-        void dataInterleave(ImgInterleave &interleave) { m_dataInterleave = interleave; }
+    public:
+        const ImgInterleave& dataInterleave() const { return m_blkBufInterleave; }
+        void dataInterleave(ImgInterleave &interleave) { m_blkBufInterleave = interleave; }
 
     public:
-        int bufXSize() const { return m_bufXSize; }
-        int bufYSize() const { return m_bufYSize; }
+        int bufXSize() const { return m_blkBufXSize; }
+        int bufYSize() const { return m_blkBufYSize; }
         void setBufSize(int bufXSize, int bufYSize) {
-            m_bufXSize = bufXSize;
-            m_bufYSize = bufYSize;
+            m_blkBufXSize = bufXSize;
+            m_blkBufYSize = bufYSize;
         }
 
-        int bufSize() const { return m_bufXSize*m_bufYSize*m_proBandCount; }
+        // 参照 ENVI 的 Dims 意义
+        int bufDims() {
+            return m_blkBufXSize*m_blkBufYSize*m_blkSpectral.spectralCount();
+        }
 
     public:
-        T* bufData() { return m_bufData; }
+        T* bufData() { return m_blkBufData; }
 
         void allocateBuffer() {
-            release();
-            m_bufData = new T[bufSize()]{};
+            freeBuffer();
+            m_blkBufData = new T[bufDims()]{};
         }
 
-        void allocateBuffer(int bufXSize, int bufYSize, int proBandCount) {
-            release();
-            m_bufData = new T[bufSize()]{};
-        }
+        //void allocateBuffer(int bufXSize, int bufYSize, ) {
+        //    freeBuffer();
+        //    m_blkBufData = new T[bufDims()]{};
+        //}
 
     private:
-        void release() {
-            if (m_bufData) {
-                delete[](m_bufData);
-                m_bufData = nullptr;
+        void freeBuffer() {
+            if (m_blkBufData) {
+                delete[](m_blkBufData);
+                m_blkBufData = nullptr;
             }
         }
 
     private:
         // 处理每一块的时候都需要更新
-        int m_xOff;
-        int m_yOff;
-        int m_xSize;
-        int m_ySize;
-        //ImgBlockEnvelope m_blkEnvelope;
+        ImgBlockEnvelope m_blkEnvelope;
 
     private:
-        int m_proBandCount;
-        int *m_proBandMap;
-        ImgInterleave m_dataInterleave;
-        std::pair<int, int*> m_proBands;
+        ImgInterleave m_blkBufInterleave;
+        ImgSpectralSubset m_blkSpectral;
 
     private:
-        int m_bufXSize;
-        int m_bufYSize;
-        T *m_bufData;
+        int m_blkBufXSize;
+        int m_blkBufYSize;
+        T *m_blkBufData;
     };
 
     // 仿函数，用于读取分块数据
@@ -270,15 +284,28 @@ namespace ImgTool {
             m_dt = toGDALDataType<T>();
         }
 
+        ImgBlockDataRead(GDALDataset *dataset, ImgSpectralSubset &specSubset) {
+            // todo 能否在构造函数中抛出异常 ???
+            if (!dataset)
+                throw std::runtime_error("GDALDataset is nullptr.");
+
+            m_poDataset = dataset;
+            m_proBandCount = specSubset.spectralCount();
+            m_proBandMap = specSubset.spectralMap();
+
+            m_imgXSize = m_poDataset->GetRasterXSize();
+            m_dt = toGDALDataType<T>();
+        }
+
         bool operator() (ImgBlockData<T> &data) {
-            int xOff = data.xOff();
-            int yOff = data.yOff();
-            int xSize = data.xSize();
-            int ySize = data.ySize();
+            int xOff = data.blkEnvelope().xOff();
+            int yOff =data.blkEnvelope().yOff();
+            int xSize = data.blkEnvelope().xSize();
+            int ySize = data.blkEnvelope().ySize();
             T *buffer = data.bufData();
 
             switch (data.dataInterleave()) {
-                case ImgInterleave::BIP:
+                case ImgInterleave::BIP :
                 {
                     // todo 将全波段处理和部分波段处理分开
                     if ( CPLErr::CE_Failure == m_poDataset->RasterIO(GF_Read,
@@ -292,7 +319,7 @@ namespace ImgTool {
                     break;
                 }
 
-                case ImgInterleave::BSQ:
+                case ImgInterleave::BSQ :
                 {
                     if ( CPLErr::CE_Failure == m_poDataset->RasterIO(GF_Read,
                             xOff, yOff, xSize, ySize, buffer, xSize, ySize,
@@ -302,7 +329,7 @@ namespace ImgTool {
                     break;
                 }
 
-                case ImgInterleave::BIL:
+                case ImgInterleave::BIL :
                 {
                     if ( CPLErr::CE_Failure == m_poDataset->RasterIO(GF_Read,
                             xOff, yOff, xSize, ySize, buffer, xSize, ySize,

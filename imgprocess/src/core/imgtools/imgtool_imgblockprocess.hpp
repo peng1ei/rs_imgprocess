@@ -27,17 +27,13 @@ namespace ImgTool {
                 ImgInterleave dataInterleave = ImgInterleave::BIP);
 
         ImgBlockProcess(const ImgBlockProcess &other)
-            : m_blockData(other.m_blockData) {
+            : m_blkData(other.m_blkData), m_spectralSubset(other.m_spectralSubset) {
                 m_poDataset = other.m_poDataset;
                 m_imgXSize = other.m_imgXSize;
                 m_imgYSize = other.m_imgYSize;
                 m_imgBandCount = other.m_imgBandCount;
 
-                m_proBandCount = other.m_proBandCount;
-                m_proBandMap = new int[m_proBandCount];
-                memcpy(m_proBandMap, other.m_proBandMap, sizeof(int)*m_proBandCount);
-
-                m_blockType = other.m_blockType;
+                m_blkType = other.m_blkType;
                 m_dataInterleave = other.m_dataInterleave;
         }
 
@@ -46,26 +42,14 @@ namespace ImgTool {
             m_imgXSize = other.m_imgXSize;
             m_imgYSize = other.m_imgYSize;
             m_imgBandCount = other.m_imgBandCount;
+            m_spectralSubset = other.m_spectralSubset;
 
-            m_proBandCount = other.m_proBandCount;
-
-            if (m_proBandMap) {
-                delete[](m_proBandMap);
-                m_proBandMap = nullptr;
-            }
-            m_proBandMap = new int[m_proBandCount];
-            memcpy(m_proBandMap, other.m_proBandMap, sizeof(int)*m_proBandCount);
-
-            m_blockType = other.m_blockType;
+            m_blkType = other.m_blkType;
             m_dataInterleave = other.m_dataInterleave;
-            m_blockData = other.m_blockData;
+            m_blkData = other.m_blkData;
         }
 
         virtual ~ImgBlockProcess() {
-            if (m_proBandMap) {
-                delete[](m_proBandMap);
-                m_proBandMap = nullptr;
-            }
         }
 
     public:
@@ -73,14 +57,14 @@ namespace ImgTool {
         template <class Fn, class... Args>
         void processBlockData(Fn &&fn, Args &&... args);
 
-        ImgBlockData<T>& data() { return m_blockData; }
+        ImgBlockData<T>& data() { return m_blkData; }
 
     public:
-        int bufXSize() { return m_blockData.bufXSize(); }
-        int bufYSize() { return m_blockData.bufYSize(); }
-        int proBandCount() const { return m_proBandCount; }
+        int bufXSize() { return m_blkData.bufXSize(); }
+        int bufYSize() { return m_blkData.bufYSize(); }
+        int spectralCount() { return m_spectralSubset.spectralCount(); }
 
-        int blockDataBufSize() { return m_blockData.bufSize(); }
+        int bufDims() { return m_blkData.bufDims(); }
 
     private:
         void initImgInfo() {
@@ -91,25 +75,23 @@ namespace ImgTool {
         }
 
         void initProcessBands(int proBandCount, int *proBandMap = nullptr) {
-            m_proBandCount = proBandCount;
-            m_proBandMap = new int[m_proBandCount];
-
-            for (int i = 0; i < m_proBandCount; i++) {
-                proBandMap ? m_proBandMap[i] = proBandMap[i] : m_proBandMap[i] = i + 1;
+            for (int i = 0; i < proBandCount; i++) {
+                proBandMap ? m_spectralSubset.addSpectral(proBandMap[i]) :
+                m_spectralSubset.addSpectral(i+1);
             }
         }
 
         void initBlockData() {
-            m_blockData.setProcessBands(m_proBandCount, m_proBandMap);
-            m_blockData.dataInterleave(m_dataInterleave);
+            m_blkData.blkSpectralSubset(m_spectralSubset);
+            m_blkData.dataInterleave(m_dataInterleave);
 
-            if (m_blockType == ImgBlockType::IBT_LINE) {
-                m_blockData.setBufSize(m_imgXSize, m_blockSize);
+            if (m_blkType == ImgBlockType::IBT_LINE) {
+                m_blkData.setBufSize(m_imgXSize, m_blkSize);
             } else {
-                m_blockData.setBufSize(m_blockSize, m_blockSize);
+                m_blkData.setBufSize(m_blkSize, m_blkSize);
             }
 
-            m_blockData.allocateBuffer();
+            m_blkData.allocateBuffer();
         }
 
     protected:
@@ -119,15 +101,13 @@ namespace ImgTool {
         int m_imgYSize;
 
     private:
-        int m_proBandCount;
-        int *m_proBandMap;
-
-        int m_blockSize;
-        ImgBlockType m_blockType;
+        int m_blkSize;
+        ImgBlockType m_blkType;
         ImgInterleave m_dataInterleave;
+        ImgSpectralSubset m_spectralSubset;
 
     private:
-        ImgBlockData<T> m_blockData;
+        ImgBlockData<T> m_blkData;
     };
 
     template <typename T>
@@ -137,8 +117,8 @@ namespace ImgTool {
             ImgInterleave dataInterleave/* = ImgInterleave::BIP */) {
 
         m_poDataset = dataset;
-        m_blockSize = blockSize;
-        m_blockType = blockType;
+        m_blkSize = blockSize;
+        m_blkType = blockType;
         m_dataInterleave = dataInterleave;
 
         initImgInfo();
@@ -154,8 +134,8 @@ namespace ImgTool {
             ImgInterleave dataInterleave/* = ImgInterleave::BIP */) {
 
         m_poDataset = dataset;
-        m_blockSize = blockSize;
-        m_blockType = blockType;
+        m_blkSize = blockSize;
+        m_blkType = blockType;
         m_dataInterleave = dataInterleave;
 
         initImgInfo();
@@ -167,66 +147,59 @@ namespace ImgTool {
     template <class Fn, class... Args>
     void ImgBlockProcess<T>::processBlockData(Fn &&fn, Args &&... args) {
         // 读取数据块的函数对象
-        ImgBlockDataRead<T> funcRead(m_poDataset, m_proBandCount, m_proBandMap);
+        ImgBlockDataRead<T> funcRead(m_poDataset, m_spectralSubset);
 
         // 数据块处理的核心函数
         auto funcBlockDataProcessCore = std::forward<Fn>(fn);
 
-        switch (m_blockType) {
-            case ImgBlockType::IBT_LINE:
+        switch (m_blkType) {
+            case ImgBlockType::IBT_LINE :
             {
-                int blockNums = m_imgYSize / m_blockSize;
-                int leftLines = m_imgYSize % m_blockSize;
-                m_blockData.xOff(0);
-                m_blockData.xSize(m_imgXSize);
-                m_blockData.ySize(m_blockSize);
+                int blockNums = m_imgYSize / m_blkSize;
+                int leftLines = m_imgYSize % m_blkSize;
+                m_blkData.blkEnvelope().xOff(0);
+                m_blkData.blkEnvelope().xSize(m_imgXSize);
+                m_blkData.blkEnvelope().ySize(m_blkSize);
 
                 // 处理完整块
                 for (int i = 0; i < blockNums; i++) {
-                    m_blockData.yOff(i*m_blockSize);
+                    m_blkData.blkEnvelope().yOff(i*m_blkSize);
 
                     // 从影像文件中读取指定的块数据
-                    funcRead(m_blockData);
+                    funcRead(m_blkData);
 
                     // todo<-------> 处理每一块数据，由使用者提供
-                    //funcBlockDataProcessCore(m_blockData, std::forward<Args>(args)...);
                     funcBlockDataProcessCore(std::forward<Args>(args)...);
                 }
 
                 // 处理剩余的最后一块（非完整块）
                 if (leftLines > 0) {
-                    m_blockData.yOff(blockNums*m_blockSize);
-                    m_blockData.ySize(leftLines);
+                    m_blkData.blkEnvelope().yOff(blockNums*m_blkSize);
+                    m_blkData.blkEnvelope().ySize(leftLines);
 
-                    funcRead(m_blockData);
-                    //funcBlockDataProcessCore(m_blockData, std::forward<Args>(args)...);
+                    funcRead(m_blkData);
                     funcBlockDataProcessCore(std::forward<Args>(args)...);
                 }
 
                 break;
             }
 
-            case ImgBlockType::IBT_SQUARE:
+            case ImgBlockType::IBT_SQUARE :
             {
-                for (int i = 0; i < m_imgYSize; i += m_blockSize) {
-                    for (int j = 0; j < m_imgXSize; j += m_blockSize) {
-                        int xBlockSize = m_blockSize;
-                        int yBlockSize = m_blockSize;
+                for (int i = 0; i < m_imgYSize; i += m_blkSize) {
+                    for (int j = 0; j < m_imgXSize; j += m_blkSize) {
+                        int xBlockSize = m_blkSize;
+                        int yBlockSize = m_blkSize;
 
                         // 如果最下面和最右面的块不够 m_blockSize, 剩下多少读多少
-                        if (i + m_blockSize > m_imgYSize) // 最下面的剩余块
+                        if (i + m_blkSize > m_imgYSize) // 最下面的剩余块
                             yBlockSize = m_imgYSize - i;
-                        if (j + m_blockSize > m_imgXSize) // 最右侧的剩余块
+                        if (j + m_blkSize > m_imgXSize) // 最右侧的剩余块
                             xBlockSize = m_imgXSize - j;
 
-                        m_blockData.xOff(j);
-                        m_blockData.yOff(i);
-                        m_blockData.xSize(xBlockSize);
-                        m_blockData.ySize(yBlockSize);
+                        m_blkData.updateBlkEnvelope(j, i, xBlockSize, yBlockSize);
 
-                        funcRead(m_blockData);
-
-                        //funcBlockDataProcessCore(m_blockData, std::forward<Args>(args)...);
+                        funcRead(m_blkData);
                         funcBlockDataProcessCore(std::forward<Args>(args)...);
                     }
 

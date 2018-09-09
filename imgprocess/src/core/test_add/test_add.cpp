@@ -9,7 +9,6 @@
 test_add::test_add(const std::string &strInFile,
         const std::string &strOutFile)
         : m_strInFile(strInFile), m_strOutFile(strOutFile) {
-
 }
 
 bool test_add::run() {
@@ -57,22 +56,16 @@ bool test_add::run() {
     //设置输出图像空间参考，与原图一致
     poDstDS->SetProjection(pszProj);
 
-
-
     ImgTool::ImgBlockProcess<float> blockProcess(poSrcDS);
     ImgTool::ImgBlockData<float> &data = blockProcess.data();
-    unsigned char *pOutBuf =
-            new unsigned char[data.bufXSize()*data.bufYSize()]{};
-
+    unsigned char *pOutBuf = new unsigned char[data.bufXSize()*data.bufYSize()]{};
 
     blockProcess.processBlockData([this, &data, pOutBuf]{
-
-         int xOff = data.xOff();
-         int yOff = data.yOff();
-         int xSize = data.xSize();
-         int ySize = data.ySize();
-         int bandCount;
-         data.getProcessBands(bandCount);
+         int xOff = data.blkEnvelope().xOff();
+         int yOff = data.blkEnvelope().yOff();
+         int xSize = data.blkEnvelope().xSize();
+         int ySize = data.blkEnvelope().ySize();
+         int bandCount = data.blkSpectralSubset().spectralCount();
 
          int elemSize = xSize*ySize;
          for (int j = 0; j < elemSize; j++) {
@@ -92,6 +85,5 @@ bool test_add::run() {
 
     GDALClose((GDALDatasetH)poSrcDS);
     GDALClose((GDALDatasetH)poDstDS);
-
     return true;
 }
