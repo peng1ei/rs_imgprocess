@@ -11,6 +11,8 @@
 #include <cstdlib>
 #include <vector>
 #include <iostream>
+#include <chrono>
+#include <functional>
 #include "gdal/gdal.h"
 #include "gdal/gdal_priv.h"
 
@@ -105,7 +107,8 @@ namespace ImgTool {
         int* spectralMap() { return spectral.data(); }
 
         std::pair<int, int*> spectralSubset() {
-            return std::pair<int, int*>(static_cast<int>(spectral.size()), spectral.data());
+            std::pair<int, int*> tmp(static_cast<int>(spectral.size()), spectral.data());
+            return tmp;
         }
 
         void addSpectral(int index) {
@@ -277,11 +280,9 @@ namespace ImgTool {
                 throw std::runtime_error("GDALDataset is nullptr.");
 
             m_poDataset = dataset;
+            m_dt = toGDALDataType<T>();
             m_proBandCount = proBandCount;
             m_proBandMap = proBandMap;
-
-            m_imgXSize = m_poDataset->GetRasterXSize();
-            m_dt = toGDALDataType<T>();
         }
 
         ImgBlockDataRead(GDALDataset *dataset, ImgSpectralSubset &specSubset) {
@@ -290,11 +291,9 @@ namespace ImgTool {
                 throw std::runtime_error("GDALDataset is nullptr.");
 
             m_poDataset = dataset;
+            m_dt = toGDALDataType<T>();
             m_proBandCount = specSubset.spectralCount();
             m_proBandMap = specSubset.spectralMap();
-
-            m_imgXSize = m_poDataset->GetRasterXSize();
-            m_dt = toGDALDataType<T>();
         }
 
         bool operator() (ImgBlockData<T> &data) {
@@ -312,7 +311,7 @@ namespace ImgTool {
                             xOff, yOff, xSize, ySize, buffer, xSize, ySize,
                             m_dt, m_proBandCount, m_proBandMap,
                             sizeof(T)*m_proBandCount,
-                            sizeof(T)*m_proBandCount*m_imgXSize,
+                            sizeof(T)*m_proBandCount*xSize,
                             sizeof(T)) ) {
                         return false;
                     }
@@ -335,8 +334,8 @@ namespace ImgTool {
                             xOff, yOff, xSize, ySize, buffer, xSize, ySize,
                             m_dt, m_proBandCount, m_proBandMap,
                             sizeof(T),
-                            sizeof(T)*m_proBandCount*m_imgXSize,
-                            sizeof(T)*m_imgXSize) ) {
+                            sizeof(T)*m_proBandCount*xSize,
+                            sizeof(T)*xSize) ) {
                         return false;
                     }
                     break;
@@ -348,10 +347,69 @@ namespace ImgTool {
     private:
         GDALDataset *m_poDataset;
         GDALDataType m_dt;
-        int m_imgXSize;
         int m_proBandCount;
         int *m_proBandMap;
     };
+
+    // 用于测试算法时间
+
+
+    // 精度修改
+    // milliseconds : 毫秒
+    // microseconds : 微秒
+    // nanoseconds : 纳秒
+    template<typename TimeT = std::chrono::milliseconds>
+    struct measure
+    {
+        template<typename F, typename ...Args>
+        static typename TimeT::rep execution(F &&fn, Args&&... args)
+        {
+            auto start = std::chrono::system_clock::now();
+
+            // Now call the function with all the parameters you need.
+            std::bind(std::forward<F>(fn), std::forward<Args>(args)...)();
+            //auto func = std::forward<F>(fn);
+            //func(std::forward<Args>(args)...);
+
+            auto duration = std::chrono::duration_cast<TimeT>
+                    (std::chrono::system_clock::now() - start);
+
+            return duration.count();
+        }
+    };
+
+    // 使用
+    /*
+    struct functor
+    {
+        int state;
+        functor(int state) : state(state) {}
+        void operator()() const
+        {
+            std::cout << "In functor run for ";
+        }
+    };
+
+    void func()
+    {
+        std::cout << "In function, run for " << std::endl;
+    }
+
+    int main()
+    {
+        // codes directly
+        std::cout << measure<>::execution([&]() {
+            // your code
+        }) << " ms" << std::endl;
+
+        // functor
+        std::cout << measure<>::execution(functor(3)) << std::endl;
+
+        // function
+        std::cout << measure<>::execution(func);
+    }
+     */
+
 
 } // namespace ImgTool
 

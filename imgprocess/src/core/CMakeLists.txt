@@ -5,7 +5,7 @@ project(${TARGET_NAME})
 
 # 只能一个目录一个目录添加
 add_subdirectory(test_add)
-add_subdirectory(test_sub)
+#add_subdirectory(test_sub)
 
 set(CMAKE_CXX_STANDARD 11)
 
@@ -20,4 +20,4 @@ add_executable(${TARGET_NAME} main.cpp)
 target_link_libraries(${TARGET_NAME}
         gdal
         test_add
-        test_sub)
+        )
