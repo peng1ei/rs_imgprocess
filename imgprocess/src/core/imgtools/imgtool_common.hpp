@@ -11,7 +11,6 @@
 #include <cstdlib>
 #include <vector>
 #include <iostream>
-#include <chrono>
 #include <functional>
 #include "gdal/gdal.h"
 #include "gdal/gdal_priv.h"
@@ -87,6 +86,7 @@ namespace ImgTool {
         int ySize_;
     };
 
+    // todo 是否需要？？？
     struct ImgBlockDims {
         int xSize_;
         int ySize_;
@@ -255,7 +255,7 @@ namespace ImgTool {
     template <typename T>
     class ImgBlockDataRead {
     public:
-        ImgBlockDataRead(GDALDataset *dataset/*, int proBandCount, int *proBandMap*/) {
+        ImgBlockDataRead(GDALDataset *dataset) {
             // todo 能否在构造函数中抛出异常 ???
             if (!dataset)
                 throw std::runtime_error("GDALDataset is nullptr.");
@@ -269,6 +269,7 @@ namespace ImgTool {
             int yOff =data.spatial().yOff();
             int xSize = data.spatial().xSize();
             int ySize = data.spatial().ySize();
+            int count = data.spectral().count();
             T *buffer = data.bufData();
 
             switch (data.interleave()) {
@@ -276,11 +277,11 @@ namespace ImgTool {
                 {
                     // todo 将全波段处理和部分波段处理分开
                     if ( CPLErr::CE_Failure == imgDataset_->RasterIO(GF_Read,
-                                                                     xOff, yOff, xSize, ySize, buffer, xSize, ySize,
-                                                                     imgDT_, data.spectral().count(), data.spectral().map(),
-                                                                     sizeof(T)*data.spectral().count(),
-                                                                     sizeof(T)*data.spectral().count()*xSize,
-                                                                     sizeof(T)) ) {
+                            xOff, yOff, xSize, ySize, buffer, xSize, ySize,
+                            imgDT_, count, data.spectral().map(),
+                            sizeof(T)*count,
+                            sizeof(T)*count*xSize,
+                            sizeof(T)) ) {
                         return false;
                     }
                     break;
@@ -289,9 +290,9 @@ namespace ImgTool {
                 case ImgInterleaveType::IIT_BSQ :
                 {
                     if ( CPLErr::CE_Failure == imgDataset_->RasterIO(GF_Read,
-                                                                     xOff, yOff, xSize, ySize, buffer, xSize, ySize,
-                                                                     imgDT_, data.spectral().count(), data.spectral().map(),
-                                                                     0, 0, 0) ) {
+                            xOff, yOff, xSize, ySize, buffer, xSize, ySize,
+                            imgDT_, count, data.spectral().map(),
+                            0, 0, 0) ) {
                         return false;
                     }
                     break;
@@ -300,11 +301,11 @@ namespace ImgTool {
                 case ImgInterleaveType::IIT_BIL :
                 {
                     if ( CPLErr::CE_Failure == imgDataset_->RasterIO(GF_Read,
-                                                                     xOff, yOff, xSize, ySize, buffer, xSize, ySize,
-                                                                     imgDT_, data.spectral().count(), data.spectral().map(),
-                                                                     sizeof(T),
-                                                                     sizeof(T)*data.spectral().count()*xSize,
-                                                                     sizeof(T)*xSize) ) {
+                            xOff, yOff, xSize, ySize, buffer, xSize, ySize,
+                            imgDT_, count, data.spectral().map(),
+                            sizeof(T),
+                            sizeof(T)*count*xSize,
+                            sizeof(T)*xSize) ) {
                         return false;
                     }
                     break;
@@ -317,60 +318,6 @@ namespace ImgTool {
         GDALDataset *imgDataset_;
         GDALDataType imgDT_;
     };
-
-    // 用于测试算法时间
-    // 精度修改
-    // milliseconds : 毫秒
-    // microseconds : 微秒
-    // nanoseconds : 纳秒
-    template<typename TimeT = std::chrono::milliseconds>
-    struct measure
-    {
-        template<typename F, typename ...Args>
-        static typename TimeT::rep execution(F &&fn, Args&&... args)
-        {
-            auto start = std::chrono::system_clock::now();
-
-            // Now call the function with all the parameters you need.
-            std::bind(std::forward<F>(fn), std::forward<Args>(args)...)();
-
-            auto duration = std::chrono::duration_cast<TimeT>
-                    (std::chrono::system_clock::now() - start);
-            return duration.count();
-        }
-    };
-
-    // 使用
-    /*
-    struct functor
-    {
-        int state;
-        functor(int state) : state(state) {}
-        void operator()() const
-        {
-            std::cout << "In functor run for ";
-        }
-    };
-
-    void func()
-    {
-        std::cout << "In function, run for " << std::endl;
-    }
-
-    int main()
-    {
-        // codes directly
-        std::cout << measure<>::execution([&]() {
-            // your code
-        }) << " ms" << std::endl;
-
-        // functor
-        std::cout << measure<>::execution(functor(3)) << std::endl;
-
-        // function
-        std::cout << measure<>::execution(func);
-    }
-     */
 
 
 } // namespace ImgTool
