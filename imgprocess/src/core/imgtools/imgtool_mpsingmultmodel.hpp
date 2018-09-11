@@ -37,20 +37,18 @@ namespace ImgTool {
             int produceItemCount_;
         };
 
-
-        // ImgTool::ImgBlockProcess<float> blockProcess(poSrcDS, 128, ImgTool::ImgBlockType::IBT_SQUARE);
         template <typename T>
         class MpSingleMultiModel {
         public:
             // 全波段处理
-            MpSingleMultiModel(int consumeCount, int bufItemCount,
+            MpSingleMultiModel(int consumerThreadsCount, int bufItemCount,
                                GDALDataset *dataset,
                                int blockSize = 8,
                                ImgBlockType blockType = IBT_LINE,
                                ImgInterleaveType dataInterleave = IIT_BIP)
-                               : readFunc_(dataset){
-                consumeCount_ = consumeCount;
-                bufItemCount_ = bufItemCount;
+                    : readFunc_(dataset){
+                consumeCount_ = consumerThreadsCount;
+                bufItemCount_ = std::max(2, bufItemCount); // 最少两个缓冲区
 
                 imgDataset_ = dataset;
                 imgBandCount_ = imgDataset_->GetRasterCount();
@@ -115,16 +113,16 @@ namespace ImgTool {
                 std::unique_lock<std::mutex> lock(bufQueue_.mutex_);
 
                 while ( ((bufQueue_.writePos_ + 1) % bufItemCount_)
-                    == bufQueue_.readPos_ ) {
+                        == bufQueue_.readPos_ ) {
                     (bufQueue_.bufNotFull_).wait(lock);
                 }
 
-                // todo 读取数据
-                // $1 begin 从文件中读取一块数据
+                // todo 从影像文件读取数据
+                // $1 从文件中读取一块数据
                 bufQueue_.items_[bufQueue_.writePos_].updateSpatial(
                         xOff, yOff, xSize, ySize);
                 readFunc_(bufQueue_.items_[bufQueue_.writePos_]);
-                // $1 end
+                // $1
 
                 bufQueue_.writePos_++;
                 if (bufQueue_.writePos_ == bufItemCount_)
@@ -135,9 +133,11 @@ namespace ImgTool {
             }
 
             // 块数据处理线程 “main()”
-            // 可能需要向每个处理线程传递不同的参数
-            void consumerTask(std::function<void()> &&funcProcessDataCore) {
+            // 可根据需要，向每个处理线程传递不同的参数
+            void consumerTask(std::function<void(ImgBlockData<T> &)> &&funcProcessDataCore) {
                 bool readyToExit = false;
+
+                auto funcCore = std::forward<std::function<void(ImgBlockData<T> &)>>(funcProcessDataCore);
 
                 // 用于从缓冲区中复制一块数据，进行独立处理（独立于线程）
                 ImgBlockData<T> data;
@@ -151,7 +151,7 @@ namespace ImgTool {
                         lock.unlock();
 
                         // todo 处理每一块数据的核心函数，是否需要“完美转型”？
-                        std::forward<std::function<void()>>(funcProcessDataCore)();
+                        funcCore(data);
 
                     } else {
                         readyToExit = true;
@@ -169,9 +169,9 @@ namespace ImgTool {
                     bufQueue_.bufNotEmpty_.wait(lock);
                 }
 
-                // $1 begin 从缓冲区中取走一个数据
+                // $1 从缓冲区中取走一个数据
                 data = bufQueue_.items_[bufQueue_.readPos_];
-                // $1 end
+                // $1
 
                 bufQueue_.readPos_++;
                 if (bufQueue_.readPos_ >= bufItemCount_)
@@ -189,13 +189,16 @@ namespace ImgTool {
 //                        );
 //               //consumeTasks_.emplace_back([consumer](){(*consumer)();});
 
-                auto consumer = std::bind(std::forward<Fn>(fn), std::forward<Args>(args)...);
-                consumeTasks_.emplace_back([consumer](){(consumer)();});
+                //auto consumer = std::bind(std::forward<Fn>(fn), std::placeholders::_1,
+                //        std::forward<Args>(args)...);
+                //consumeTasks_.emplace_back([consumer](){(consumer)();});
+                consumeTasks_.emplace_back(std::bind(std::forward<Fn>(fn), std::placeholders::_1,
+                                                     std::forward<Args>(args)...));
             }
 
         public:
             void run() {
-                // 初始化相关信息
+                // $1 初始化相关信息
                 if (blkType_ == IBT_LINE) {
                     bufQueue_.produceItemCount_ = imgYSize_ / blkSize_;
                     int leftLines = imgYSize_ % blkSize_;
@@ -236,19 +239,27 @@ namespace ImgTool {
                                                 dataInterleave_));
                     }
                 }
+                // $1
 
-
+                // $2 创建线程并启动
                 std::thread producer(&MpSingleMultiModel<T>::producerTask, this);
 
                 for (int i = 0; i < consumeCount_; i++) {
                     consumeThreads_.emplace_back(std::thread(&MpSingleMultiModel<T>::consumerTask,
-                            this, consumeTasks_[i]));
+                                                             this, consumeTasks_[i]));
                 }
 
+                // $2
+
+                // $3 等待线程结束
+                // 同步各个处理线程和主线程
+                // 主线程需要等待各线程处理的结果
+                // todo 如果不需要和主线程进行同步，是否可以分离线程？？？
                 producer.join();
                 for (int i = 0; i < consumeCount_; i++) {
                     consumeThreads_[i].join();
                 }
+                // $3
             }
 
             const DataBufferQueue<T>& bufQueue() const { return bufQueue_; }
@@ -260,28 +271,26 @@ namespace ImgTool {
             int imgYSize_;
 
         private:
-            int blkSize_;
-            ImgBlockType blkType_;
-            ImgInterleaveType dataInterleave_;
-            ImgSpectralSubset spectralSubset_;
+            int blkSize_;   // 块大小（块高，块宽度由 blkType_ 类型决定）
+            ImgBlockType blkType_;  // 块类型（行或方形）
+            ImgInterleaveType dataInterleave_;  // 数据在缓冲区的组织方式（BSQ、BIL、BIP）
 
         private:
-            ImgBlockData<T> blkData_;
+            DataBufferQueue<T> bufQueue_;   // 数据缓冲区队列
+            int consumeCount_;              // 消费者线程数量（块处理线程数）
+            int bufItemCount_;              // 缓冲区队列 item 数量，最少 2 个
 
         private:
-            DataBufferQueue<T> bufQueue_;
-            int consumeCount_;
-            int bufItemCount_;
+            ImgBlockDataRead<T> readFunc_;  // 读取块数据的函数对象
 
         private:
-            ImgBlockDataRead<T> readFunc_;
+            std::vector<std::thread> consumeThreads_;   // 消费者线程（块数据处理线程）
 
-        private:
-            std::vector<std::thread> consumeThreads_;
-            std::vector<std::function<void()>> consumeTasks_;
+            // 每个消费者线程所处理的核心函数对象
+            // 可以从主线程中接收不同的参数（主要是为了将主线程的任务并行化）
+            // 块处理的核心功能，由使用者负责实现，可传入 lambda、成员函数、全局函数、函数对象等
+            std::vector<std::function<void(ImgBlockData<T> &)>> consumeTasks_;
         };
-
-
 
     } // namespace Mp
 
