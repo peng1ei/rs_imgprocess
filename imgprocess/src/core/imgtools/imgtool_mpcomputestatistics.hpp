@@ -17,7 +17,9 @@ namespace ImgTool {
             imgDataset_ = dataset;
             blkSize_ = blkSize;
             imgBandCount_ = dataset->GetRasterCount();
-            threadCount_ = 4; // todo 根据当前机器 CPU 核数去设置
+
+            // todo 根据当前机器 CPU 核数以及需要处理的数据量去设置
+            threadCount_ = 4;
         }
 
         virtual ~MpComputeStatistics() {
@@ -39,8 +41,10 @@ namespace ImgTool {
                  double *covariance, double *correlation = nullptr) {
 
             // step 1: 创建一个 “单-多” 模型对象
+            // todo 线程数和缓冲区队列数量的控制
+            // todo 根据实际硬件条件（CPU核数）及任务量去决定
             ImgTool::Mp::MpSingleMultiModel<T> mp(threadCount_, threadCount_,
-                    imgDataset_, blkSize_, ImgTool::IBT_SQUARE);
+                    imgDataset_, blkSize_);
 
             // setp 2: 设置每一个消费者线程核心处理函数
             // 可以设置各个线程独立的参数
@@ -49,11 +53,12 @@ namespace ImgTool {
                 stdDevs_.push_back(new double[imgBandCount_]{});
                 covariances_.push_back(new double[imgBandCount_*imgBandCount_]{});
 
-                mp.addProcessBlockData(std::bind(&MpComputeStatistics::processDataCore<T>, this,
-                                                 std::placeholders::_1,
-                                                 means_[i],
-                                                 stdDevs_[i],
-                                                 covariances_[i]));
+                mp.addProcessBlockData(std::bind(&MpComputeStatistics::processDataCore<T>,
+                        this,
+                        std::placeholders::_1,
+                        means_[i],
+                        stdDevs_[i],
+                        covariances_[i]));
             }
 
             // step 3: 启动各个处理线程，并同步等待处理结果
@@ -121,8 +126,8 @@ namespace ImgTool {
         }
 
         template <typename T>
-        void processDataCore(ImgTool::ImgBlockData<T> &data, double *mean, double *stdDev,
-                double *covariance) {
+        void processDataCore(ImgTool::ImgBlockData<T> &data,
+                double *mean, double *stdDev, double *covariance) {
             int size = data.spatial().xSize() * data.spatial().ySize();
             T *pBuf1, *pBuf2;
             T *buf = data.bufData();
@@ -166,6 +171,5 @@ namespace ImgTool {
     };
 
 } // namespace ImgTool
-
 
 #endif //IMGPROCESS_IMGTOOL_MPCOMPUTESTATISTICS_HPP
