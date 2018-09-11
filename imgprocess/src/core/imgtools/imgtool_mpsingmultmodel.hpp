@@ -43,8 +43,8 @@ namespace ImgTool {
             // 全波段处理
             MpSingleMultiModel(int consumerThreadsCount, int bufItemCount,
                                GDALDataset *dataset,
-                               int blockSize = 8,
-                               ImgBlockType blockType = IBT_LINE,
+                               int blockSize = 128,
+                               ImgBlockType blockType = IBT_SQUARE,
                                ImgInterleaveType dataInterleave = IIT_BIP)
                     : readFunc_(dataset){
                 consumeCount_ = consumerThreadsCount;
@@ -60,31 +60,12 @@ namespace ImgTool {
 
             }
 
-            virtual ~MpSingleMultiModel() {
-
-            }
+            virtual ~MpSingleMultiModel() {}
 
             // 读数据线程 "main()"
             void producerTask() {
 
                 switch (blkType_) {
-                    case ImgBlockType::IBT_LINE :
-                    {
-                        int blockNums = imgYSize_ / blkSize_;
-                        int leftLines = imgYSize_ % blkSize_;
-
-                        // 处理完整块
-                        for (int i = 0; i < blockNums; i++) {
-                            produceBlockData(0, i*blkSize_, imgXSize_, blkSize_);
-                        }
-
-                        // 处理剩余的最后一块（非完整块）
-                        if (leftLines > 0) {
-                            produceBlockData(0, blockNums*blkSize_, imgXSize_, leftLines);
-                        }
-
-                        break;
-                    }
 
                     case ImgBlockType::IBT_SQUARE :
                     {
@@ -101,6 +82,24 @@ namespace ImgTool {
 
                                 produceBlockData(j, i, xBlockSize, yBlockSize);
                             }
+                        }
+
+                        break;
+                    }
+
+                    case ImgBlockType::IBT_LINE :
+                    {
+                        int blockNums = imgYSize_ / blkSize_;
+                        int leftLines = imgYSize_ % blkSize_;
+
+                        // 处理完整块
+                        for (int i = 0; i < blockNums; i++) {
+                            produceBlockData(0, i*blkSize_, imgXSize_, blkSize_);
+                        }
+
+                        // 处理剩余的最后一块（非完整块）
+                        if (leftLines > 0) {
+                            produceBlockData(0, blockNums*blkSize_, imgXSize_, leftLines);
                         }
 
                         break;
@@ -140,7 +139,7 @@ namespace ImgTool {
                 auto funcCore = std::forward<std::function<void(ImgBlockData<T> &)>>(funcProcessDataCore);
 
                 // 用于从缓冲区中复制一块数据，进行独立处理（独立于线程）
-                ImgBlockData<T> data;
+                ImgBlockData<T> data = bufQueue_.items_[0];
                 while (true) {
 
                     std::unique_lock<std::mutex> lock(bufQueue_.mutexConsumedItemCount_);
@@ -150,7 +149,7 @@ namespace ImgTool {
                         ++bufQueue_.consumedItemCount_;
                         lock.unlock();
 
-                        // todo 处理每一块数据的核心函数，是否需要“完美转型”？
+                        // todo 处理每一块数据的核心函数
                         funcCore(data);
 
                     } else {
@@ -170,6 +169,7 @@ namespace ImgTool {
                 }
 
                 // $1 从缓冲区中取走一个数据
+                // todo 只需更新 空间范围以及缓冲区内的内容，无需重新分配内存
                 data = bufQueue_.items_[bufQueue_.readPos_];
                 // $1
 
@@ -198,12 +198,13 @@ namespace ImgTool {
 
         public:
             void run() {
+
                 // $1 初始化相关信息
-                if (blkType_ == IBT_LINE) {
-                    bufQueue_.produceItemCount_ = imgYSize_ / blkSize_;
-                    int leftLines = imgYSize_ % blkSize_;
-                    if (leftLines > 0)  bufQueue_.produceItemCount_++;
-                } else {
+                bufQueue_.readPos_ = 0;
+                bufQueue_.writePos_ = 0;
+                bufQueue_.consumedItemCount_ = 0;
+
+                if (blkType_ == IBT_SQUARE) {
                     int xNums = imgXSize_ / blkSize_;
                     int yNums = imgYSize_ / blkSize_;
                     int xLeftLines = imgXSize_ % blkSize_;
@@ -213,30 +214,29 @@ namespace ImgTool {
                     if (yLeftLines > 0) yNums++;
 
                     bufQueue_.produceItemCount_ = xNums*yNums;
-                }
 
-                bufQueue_.readPos_ = 0;
-                bufQueue_.writePos_ = 0;
-                bufQueue_.consumedItemCount_ = 0;
-
-                // 创建缓冲区空间
-                if (blkType_ == IBT_LINE) {
+                    // 创建缓冲区
                     for (int i = 0; i < bufItemCount_; i++) {
                         bufQueue_.items_.emplace_back(
                                 ImgBlockData<T>(ImgSpatialSubset(),
-                                                ImgSpectralSubset(imgBandCount_),
-                                                imgXSize_,
-                                                blkSize_,
-                                                dataInterleave_));
+                                        ImgSpectralSubset(imgBandCount_),
+                                        blkSize_,
+                                        blkSize_,
+                                        dataInterleave_));
                     }
+
                 } else {
+                    bufQueue_.produceItemCount_ = imgYSize_ / blkSize_;
+                    int leftLines = imgYSize_ % blkSize_;
+                    if (leftLines > 0)  bufQueue_.produceItemCount_++;
+
                     for (int i = 0; i < bufItemCount_; i++) {
                         bufQueue_.items_.emplace_back(
                                 ImgBlockData<T>(ImgSpatialSubset(),
-                                                ImgSpectralSubset(imgBandCount_),
-                                                blkSize_,
-                                                blkSize_,
-                                                dataInterleave_));
+                                        ImgSpectralSubset(imgBandCount_),
+                                        imgXSize_,
+                                        blkSize_,
+                                        dataInterleave_));
                     }
                 }
                 // $1
@@ -246,9 +246,8 @@ namespace ImgTool {
 
                 for (int i = 0; i < consumeCount_; i++) {
                     consumeThreads_.emplace_back(std::thread(&MpSingleMultiModel<T>::consumerTask,
-                                                             this, consumeTasks_[i]));
+                            this, consumeTasks_[i]));
                 }
-
                 // $2
 
                 // $3 等待线程结束
