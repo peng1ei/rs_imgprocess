@@ -5,47 +5,47 @@
 		<Option title="imgprocess"/>
 		<Option makefile_is_custom="1"/>
 		<Option compiler="gcc"/>
-		<Option virtualFolders="CMake Files\;CMake Files\test_add\;CMake Files\test_sub\;"/>
+		<Option virtualFolders="CMake Files\;CMake Files\test_add\;"/>
 		<Build>
 			<Target title="all">
-				<Option working_dir="/home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug"/>
+				<Option working_dir="/home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-debug"/>
 				<Option type="4"/>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j4 -f &quot;/home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
-					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j4 -f &quot;/home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j4 -f &quot;/home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="rebuild_cache">
-				<Option working_dir="/home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug"/>
+				<Option working_dir="/home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-debug"/>
 				<Option type="4"/>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j4 -f &quot;/home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
-					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j4 -f &quot;/home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j4 -f &quot;/home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="edit_cache">
-				<Option working_dir="/home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug"/>
+				<Option working_dir="/home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-debug"/>
 				<Option type="4"/>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j4 -f &quot;/home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
-					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j4 -f &quot;/home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j4 -f &quot;/home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="imgprocess">
-				<Option output="/home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug/imgprocess" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="/home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug"/>
+				<Option output="/home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-debug/imgprocess" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-debug"/>
 				<Option object_output="./"/>
 				<Option type="1"/>
 				<Option compiler="gcc"/>
 				<Compiler>
 					<Add directory="/usr/include/gdal"/>
-					<Add directory="/home/penglei/code/tmp/imgprocess/src/core/imgtools"/>
+					<Add directory="/home/penglei/code/rs_imgprocess/imgprocess/src/core/imgtools"/>
 					<Add directory="/usr/include/c++/7"/>
 					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
 					<Add directory="/usr/include/c++/7/backward"/>
@@ -56,21 +56,21 @@
 					<Add directory="/usr/include"/>
 				</Compiler>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j4 -f &quot;/home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug/Makefile&quot;  VERBOSE=1 imgprocess"/>
-					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j4 -f &quot;/home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j4 -f &quot;/home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-debug/Makefile&quot;  VERBOSE=1 imgprocess"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="imgprocess/fast">
-				<Option output="/home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug/imgprocess" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="/home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug"/>
+				<Option output="/home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-debug/imgprocess" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-debug"/>
 				<Option object_output="./"/>
 				<Option type="1"/>
 				<Option compiler="gcc"/>
 				<Compiler>
 					<Add directory="/usr/include/gdal"/>
-					<Add directory="/home/penglei/code/tmp/imgprocess/src/core/imgtools"/>
+					<Add directory="/home/penglei/code/rs_imgprocess/imgprocess/src/core/imgtools"/>
 					<Add directory="/usr/include/c++/7"/>
 					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
 					<Add directory="/usr/include/c++/7/backward"/>
@@ -81,21 +81,21 @@
 					<Add directory="/usr/include"/>
 				</Compiler>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j4 -f &quot;/home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug/Makefile&quot;  VERBOSE=1 imgprocess/fast"/>
-					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j4 -f &quot;/home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j4 -f &quot;/home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-debug/Makefile&quot;  VERBOSE=1 imgprocess/fast"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="test_add">
-				<Option output="/home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug/test_add/libtest_add.a" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="/home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug/test_add"/>
+				<Option output="/home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-debug/test_add/libtest_add.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-debug/test_add"/>
 				<Option object_output="./"/>
 				<Option type="2"/>
 				<Option compiler="gcc"/>
 				<Compiler>
 					<Add directory="/usr/include/gdal"/>
-					<Add directory="/home/penglei/code/tmp/imgprocess/src/core/test_add/../imgtools"/>
+					<Add directory="/home/penglei/code/rs_imgprocess/imgprocess/src/core/test_add/../imgtools"/>
 					<Add directory="/usr/include/c++/7"/>
 					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
 					<Add directory="/usr/include/c++/7/backward"/>
@@ -106,21 +106,21 @@
 					<Add directory="/usr/include"/>
 				</Compiler>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j4 -f &quot;/home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug/test_add/Makefile&quot;  VERBOSE=1 test_add"/>
-					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug/test_add/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j4 -f &quot;/home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug/test_add/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j4 -f &quot;/home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug/test_add/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-debug/test_add/Makefile&quot;  VERBOSE=1 test_add"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-debug/test_add/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-debug/test_add/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-debug/test_add/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="test_add/fast">
-				<Option output="/home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug/test_add/libtest_add.a" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="/home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug/test_add"/>
+				<Option output="/home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-debug/test_add/libtest_add.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-debug/test_add"/>
 				<Option object_output="./"/>
 				<Option type="2"/>
 				<Option compiler="gcc"/>
 				<Compiler>
 					<Add directory="/usr/include/gdal"/>
-					<Add directory="/home/penglei/code/tmp/imgprocess/src/core/test_add/../imgtools"/>
+					<Add directory="/home/penglei/code/rs_imgprocess/imgprocess/src/core/test_add/../imgtools"/>
 					<Add directory="/usr/include/c++/7"/>
 					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
 					<Add directory="/usr/include/c++/7/backward"/>
@@ -131,82 +131,27 @@
 					<Add directory="/usr/include"/>
 				</Compiler>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j4 -f &quot;/home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug/test_add/Makefile&quot;  VERBOSE=1 test_add/fast"/>
-					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug/test_add/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j4 -f &quot;/home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug/test_add/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j4 -f &quot;/home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug/test_add/Makefile&quot;  VERBOSE=1 clean"/>
-				</MakeCommands>
-			</Target>
-			<Target title="test_sub">
-				<Option output="/home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug/test_sub/libtest_sub.a" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="/home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug/test_sub"/>
-				<Option object_output="./"/>
-				<Option type="2"/>
-				<Option compiler="gcc"/>
-				<Compiler>
-					<Add directory="/usr/include/c++/7"/>
-					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
-					<Add directory="/usr/include/c++/7/backward"/>
-					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
-					<Add directory="/usr/local/include"/>
-					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
-					<Add directory="/usr/include/x86_64-linux-gnu"/>
-					<Add directory="/usr/include"/>
-				</Compiler>
-				<MakeCommands>
-					<Build command="/usr/bin/make -j4 -f &quot;/home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug/test_sub/Makefile&quot;  VERBOSE=1 test_sub"/>
-					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug/test_sub/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j4 -f &quot;/home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug/test_sub/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j4 -f &quot;/home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug/test_sub/Makefile&quot;  VERBOSE=1 clean"/>
-				</MakeCommands>
-			</Target>
-			<Target title="test_sub/fast">
-				<Option output="/home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug/test_sub/libtest_sub.a" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="/home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug/test_sub"/>
-				<Option object_output="./"/>
-				<Option type="2"/>
-				<Option compiler="gcc"/>
-				<Compiler>
-					<Add directory="/usr/include/c++/7"/>
-					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
-					<Add directory="/usr/include/c++/7/backward"/>
-					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
-					<Add directory="/usr/local/include"/>
-					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
-					<Add directory="/usr/include/x86_64-linux-gnu"/>
-					<Add directory="/usr/include"/>
-				</Compiler>
-				<MakeCommands>
-					<Build command="/usr/bin/make -j4 -f &quot;/home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug/test_sub/Makefile&quot;  VERBOSE=1 test_sub/fast"/>
-					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug/test_sub/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j4 -f &quot;/home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug/test_sub/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j4 -f &quot;/home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug/test_sub/Makefile&quot;  VERBOSE=1 clean"/>
+					<Build command="/usr/bin/make -j4 -f &quot;/home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-debug/test_add/Makefile&quot;  VERBOSE=1 test_add/fast"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-debug/test_add/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-debug/test_add/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-debug/test_add/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 		</Build>
-		<Unit filename="/home/penglei/code/tmp/imgprocess/src/core/main.cpp">
+		<Unit filename="/home/penglei/code/rs_imgprocess/imgprocess/src/core/main.cpp">
 			<Option target="imgprocess"/>
 		</Unit>
-		<Unit filename="/home/penglei/code/tmp/imgprocess/src/core/test_add/test_add.cpp">
+		<Unit filename="/home/penglei/code/rs_imgprocess/imgprocess/src/core/test_add/test_add.cpp">
 			<Option target="test_add"/>
 		</Unit>
-		<Unit filename="/home/penglei/code/tmp/imgprocess/src/core/test_add/test_add.h">
+		<Unit filename="/home/penglei/code/rs_imgprocess/imgprocess/src/core/test_add/test_add.h">
 			<Option target="test_add"/>
 		</Unit>
-		<Unit filename="/home/penglei/code/tmp/imgprocess/src/core/test_sub/test_sub.cpp">
-			<Option target="test_sub"/>
-		</Unit>
-		<Unit filename="/home/penglei/code/tmp/imgprocess/src/core/test_sub/test_sub.h">
-			<Option target="test_sub"/>
-		</Unit>
-		<Unit filename="/home/penglei/code/tmp/imgprocess/src/core/CMakeLists.txt">
+		<Unit filename="/home/penglei/code/rs_imgprocess/imgprocess/src/core/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\"/>
 		</Unit>
-		<Unit filename="/home/penglei/code/tmp/imgprocess/src/core/test_add/CMakeLists.txt">
+		<Unit filename="/home/penglei/code/rs_imgprocess/imgprocess/src/core/test_add/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\test_add\"/>
-		</Unit>
-		<Unit filename="/home/penglei/code/tmp/imgprocess/src/core/test_sub/CMakeLists.txt">
-			<Option virtualFolder="CMake Files\test_sub\"/>
 		</Unit>
 	</Project>
 </CodeBlocks_project_file>

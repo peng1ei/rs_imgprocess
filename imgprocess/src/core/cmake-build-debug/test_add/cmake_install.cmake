@@ -1,4 +1,4 @@
-# Install script for directory: /home/penglei/code/tmp/imgprocess/src/core/test_add
+# Install script for directory: /home/penglei/code/rs_imgprocess/imgprocess/src/core/test_add
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

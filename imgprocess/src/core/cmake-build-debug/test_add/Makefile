@@ -48,10 +48,10 @@ RM = /snap/clion/38/bin/cmake/linux/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/penglei/code/tmp/imgprocess/src/core
+CMAKE_SOURCE_DIR = /home/penglei/code/rs_imgprocess/imgprocess/src/core
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug
+CMAKE_BINARY_DIR = /home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-debug
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -80,14 +80,14 @@ edit_cache/fast: edit_cache
 
 # The main all target
 all: cmake_check_build_system
-	cd /home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug && $(CMAKE_COMMAND) -E cmake_progress_start /home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug/CMakeFiles /home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug/test_add/CMakeFiles/progress.marks
-	cd /home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 test_add/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug/CMakeFiles 0
+	cd /home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-debug && $(CMAKE_COMMAND) -E cmake_progress_start /home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-debug/CMakeFiles /home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-debug/test_add/CMakeFiles/progress.marks
+	cd /home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 test_add/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-debug/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	cd /home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 test_add/clean
+	cd /home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 test_add/clean
 .PHONY : clean
 
 # The main clean target
@@ -97,22 +97,22 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	cd /home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 test_add/preinstall
+	cd /home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 test_add/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	cd /home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 test_add/preinstall
+	cd /home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 test_add/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	cd /home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	cd /home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-debug && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
 # Convenience name for target.
 test_add/CMakeFiles/test_add.dir/rule:
-	cd /home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 test_add/CMakeFiles/test_add.dir/rule
+	cd /home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 test_add/CMakeFiles/test_add.dir/rule
 .PHONY : test_add/CMakeFiles/test_add.dir/rule
 
 # Convenience name for target.
@@ -122,7 +122,7 @@ test_add: test_add/CMakeFiles/test_add.dir/rule
 
 # fast build rule for target.
 test_add/fast:
-	cd /home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug && $(MAKE) -f test_add/CMakeFiles/test_add.dir/build.make test_add/CMakeFiles/test_add.dir/build
+	cd /home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-debug && $(MAKE) -f test_add/CMakeFiles/test_add.dir/build.make test_add/CMakeFiles/test_add.dir/build
 .PHONY : test_add/fast
 
 test_add.o: test_add.cpp.o
@@ -131,7 +131,7 @@ test_add.o: test_add.cpp.o
 
 # target to build an object file
 test_add.cpp.o:
-	cd /home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug && $(MAKE) -f test_add/CMakeFiles/test_add.dir/build.make test_add/CMakeFiles/test_add.dir/test_add.cpp.o
+	cd /home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-debug && $(MAKE) -f test_add/CMakeFiles/test_add.dir/build.make test_add/CMakeFiles/test_add.dir/test_add.cpp.o
 .PHONY : test_add.cpp.o
 
 test_add.i: test_add.cpp.i
@@ -140,7 +140,7 @@ test_add.i: test_add.cpp.i
 
 # target to preprocess a source file
 test_add.cpp.i:
-	cd /home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug && $(MAKE) -f test_add/CMakeFiles/test_add.dir/build.make test_add/CMakeFiles/test_add.dir/test_add.cpp.i
+	cd /home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-debug && $(MAKE) -f test_add/CMakeFiles/test_add.dir/build.make test_add/CMakeFiles/test_add.dir/test_add.cpp.i
 .PHONY : test_add.cpp.i
 
 test_add.s: test_add.cpp.s
@@ -149,7 +149,7 @@ test_add.s: test_add.cpp.s
 
 # target to generate assembly for a file
 test_add.cpp.s:
-	cd /home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug && $(MAKE) -f test_add/CMakeFiles/test_add.dir/build.make test_add/CMakeFiles/test_add.dir/test_add.cpp.s
+	cd /home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-debug && $(MAKE) -f test_add/CMakeFiles/test_add.dir/build.make test_add/CMakeFiles/test_add.dir/test_add.cpp.s
 .PHONY : test_add.cpp.s
 
 # Help Target
@@ -175,6 +175,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	cd /home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd /home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-debug && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 

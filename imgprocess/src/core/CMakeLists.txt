@@ -17,7 +17,10 @@ link_directories(/usr/lib)
 
 add_executable(${TARGET_NAME} main.cpp)
 
+find_package(Threads REQUIRED)
+
 target_link_libraries(${TARGET_NAME}
         gdal
         test_add
+        Threads::Threads
         )

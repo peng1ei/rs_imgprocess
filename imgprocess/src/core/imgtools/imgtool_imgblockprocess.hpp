@@ -62,7 +62,7 @@ namespace ImgTool {
     public:
         int bufXSize() { return m_blkData.bufXSize(); }
         int bufYSize() { return m_blkData.bufYSize(); }
-        int spectralCount() { return m_spectralSubset.spectralCount(); }
+        int spectralCount() { return m_spectralSubset.count(); }
 
         int bufDims() { return m_blkData.bufDims(); }
 
@@ -103,7 +103,7 @@ namespace ImgTool {
     private:
         int m_blkSize;
         ImgBlockType m_blkType;
-        ImgInterleave m_dataInterleave;
+        ImgInterleaveType m_dataInterleave;
         ImgSpectralSubset m_spectralSubset;
 
     private:
@@ -147,7 +147,7 @@ namespace ImgTool {
     template <class Fn, class... Args>
     void ImgBlockProcess<T>::processBlockData(Fn &&fn, Args &&... args) {
         // 读取数据块的函数对象
-        ImgBlockDataRead<T> funcRead(m_poDataset, m_spectralSubset);
+        ImgBlockDataRead<T> funcRead(m_poDataset);
 
         // 数据块处理的核心函数
         auto funcBlockDataProcessCore = std::forward<Fn>(fn);
@@ -157,13 +157,13 @@ namespace ImgTool {
             {
                 int blockNums = m_imgYSize / m_blkSize;
                 int leftLines = m_imgYSize % m_blkSize;
-                m_blkData.blkEnvelope().xOff(0);
-                m_blkData.blkEnvelope().xSize(m_imgXSize);
-                m_blkData.blkEnvelope().ySize(m_blkSize);
+                m_blkData.spatial().xOff(0);
+                m_blkData.spatial().xSize(m_imgXSize);
+                m_blkData.spatial().ySize(m_blkSize);
 
                 // 处理完整块
                 for (int i = 0; i < blockNums; i++) {
-                    m_blkData.blkEnvelope().yOff(i*m_blkSize);
+                    m_blkData.spatial().yOff(i*m_blkSize);
 
                     // 从影像文件中读取指定的块数据
                     funcRead(m_blkData);
@@ -174,8 +174,8 @@ namespace ImgTool {
 
                 // 处理剩余的最后一块（非完整块）
                 if (leftLines > 0) {
-                    m_blkData.blkEnvelope().yOff(blockNums*m_blkSize);
-                    m_blkData.blkEnvelope().ySize(leftLines);
+                    m_blkData.spatial().yOff(blockNums*m_blkSize);
+                    m_blkData.spatial().ySize(leftLines);
 
                     funcRead(m_blkData);
                     funcBlockDataProcessCore(std::forward<Args>(args)...);
@@ -197,12 +197,11 @@ namespace ImgTool {
                         if (j + m_blkSize > m_imgXSize) // 最右侧的剩余块
                             xBlockSize = m_imgXSize - j;
 
-                        m_blkData.updateBlkEnvelope(j, i, xBlockSize, yBlockSize);
+                        m_blkData.updateSpatial(j, i, xBlockSize, yBlockSize);
 
                         funcRead(m_blkData);
                         funcBlockDataProcessCore(std::forward<Args>(args)...);
                     }
-
                 }
 
                 break;

@@ -4,7 +4,7 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/home/penglei/code/tmp/imgprocess/src/core/test_add/test_add.cpp" "/home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug/test_add/CMakeFiles/test_add.dir/test_add.cpp.o"
+  "/home/penglei/code/rs_imgprocess/imgprocess/src/core/test_add/test_add.cpp" "/home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-debug/test_add/CMakeFiles/test_add.dir/test_add.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 

@@ -4,7 +4,7 @@
 
 #include "test_add.h"
 #include "gdal_priv.h"
-#include "../imgtools/imgtool_imgblockprocess.hpp"
+#include "../imgtools/imgtool_mpsingmultmodel.hpp"
 
 test_add::test_add(const std::string &strInFile,
         const std::string &strOutFile)
@@ -56,34 +56,92 @@ bool test_add::run() {
     //设置输出图像空间参考，与原图一致
     poDstDS->SetProjection(pszProj);
 
-    ImgTool::ImgBlockProcess<float> blockProcess(poSrcDS);
-    ImgTool::ImgBlockData<float> &data = blockProcess.data();
-    unsigned char *pOutBuf = new unsigned char[data.bufXSize()*data.bufYSize()]{};
+    //////////////////////////////////////////////////////////////////////////////////////////////
+//    ImgTool::ImgBlockProcess<float> blockProcess(poSrcDS, 128, ImgTool::ImgBlockType::IBT_SQUARE);
+//    ImgTool::ImgBlockData<float> &data = blockProcess.data();
+//    int bandCount = data.blkSpectralSubset().spectralCount();
+//
+//    // todo 可设置一些参数，比如分配输出缓冲区
+//    unsigned char *pOutBuf = new unsigned char[data.bufXSize()*data.bufYSize()]{};
+//
+//    blockProcess.processBlockData([&data, this, pOutBuf, &bandCount]{
+//         int xOff = data.blkEnvelope().xOff();
+//         int yOff = data.blkEnvelope().yOff();
+//         int xSize = data.blkEnvelope().xSize();
+//         int ySize = data.blkEnvelope().ySize();
+//
+//         // todo 核心算法
+//         int elemSize = xSize*ySize;
+//         for (int j = 0; j < elemSize; j++) {
+//             float *buf = data.bufData() + j*bandCount;
+//
+//             double tmp = 0;
+//             for (int i = 0; i < bandCount; i++) {
+//                 tmp += buf[i];
+//             }
+//
+//             pOutBuf[j] = static_cast<unsigned char>(tmp);
+//         }
+//
+//         this->poDstDS->RasterIO(GF_Write, xOff, yOff, xSize, ySize, pOutBuf, xSize, ySize,
+//                 GDT_Byte, 1, nullptr, 0, 0, 0, nullptr);
+//
+//         std::cout << "<" << xOff << ", " << yOff << ", " << xSize << ", " << ySize << ">\n";
+//    });
+    //////////////////////////////////////////////////////////////////////////////////////////////
 
-    blockProcess.processBlockData([this, &data, pOutBuf]{
-         int xOff = data.blkEnvelope().xOff();
-         int yOff = data.blkEnvelope().yOff();
-         int xSize = data.blkEnvelope().xSize();
-         int ySize = data.blkEnvelope().ySize();
-         int bandCount = data.blkSpectralSubset().spectralCount();
+    {
+        std::cout << "Begin MpSingleMultiModel\n" << std::endl;
 
-         int elemSize = xSize*ySize;
-         for (int j = 0; j < elemSize; j++) {
-             float *buf = data.bufData() + j*bandCount;
+        // $1 测试 MpSingleMultiModel
+        // 通过 lambda 调用
+//        ImgTool::Mp::MpSingleMultiModel<float> mp(4, 4, poSrcDS, 128, ImgTool::IBT_SQUARE);
+//
+//        for (int i = 0; i < 4; i++) {
+//            //unsigned char *pOutBuf = new unsigned char[]{};
+//
+//            mp.addProcessBlockData(std::bind(
+//                    [&mp, this](ImgTool::ImgBlockData<float> &data/*,...*/) {
+//                std::cout << "consume the " << mp.bufQueue().consumedItemCount_ << " item" << std::endl;
+//                std::cout << "<" << data.spatial().xOff() << ", "
+//                    << data.spatial().yOff() << ", "
+//                    << data.spatial().xSize() << ", "
+//                    << data.spatial().ySize() << ">\n\n";
+//                },
+//                std::placeholders::_1));
+//        }
+//
+//        mp.run();
+        // $1
 
-             double tmp = 0;
-             for (int i = 0; i < bandCount; i++) {
-                 tmp += buf[i];
-             }
+        // $2 通过 函数调用
+        ImgTool::Mp::MpSingleMultiModel<float> mp(1, 2, poSrcDS, 128, ImgTool::IBT_SQUARE);
 
-             pOutBuf[j] = static_cast<unsigned char>(tmp);
-         }
+        for (int i = 0; i < 1; i++) {
+            //unsigned char *pOutBuf = new unsigned char[]{};
 
-         this->poDstDS->RasterIO(GF_Write, xOff, yOff, xSize, ySize, pOutBuf, xSize, ySize,
-                 GDT_Byte, 1, nullptr, 0, 0, 0, nullptr);
-    });
+            mp.addProcessBlockData(std::bind(&test_add::processDataCore<float>, this,
+                    std::placeholders::_1));
+        }
+
+        mp.run();
+
+        // $2
+
+        std::cout << "\nEnd MpSingleMultiModel\n" << std::endl;
+    }
+
+
 
     GDALClose((GDALDatasetH)poSrcDS);
     GDALClose((GDALDatasetH)poDstDS);
     return true;
+}
+
+template <typename T>
+void test_add::processDataCore(ImgTool::ImgBlockData<T> &data/*,...*/) {
+    std::cout << "<" << data.spatial().xOff() << ", "
+              << data.spatial().yOff() << ", "
+              << data.spatial().xSize() << ", "
+              << data.spatial().ySize() << ">\n\n";
 }

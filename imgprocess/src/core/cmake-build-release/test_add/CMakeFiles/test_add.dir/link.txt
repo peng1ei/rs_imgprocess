@@ -1,0 +1,2 @@
+/usr/bin/ar qc libtest_add.a  CMakeFiles/test_add.dir/test_add.cpp.o
+/usr/bin/ranlib libtest_add.a

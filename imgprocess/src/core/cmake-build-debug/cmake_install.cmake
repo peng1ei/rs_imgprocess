@@ -1,4 +1,4 @@
-# Install script for directory: /home/penglei/code/tmp/imgprocess/src/core
+# Install script for directory: /home/penglei/code/rs_imgprocess/imgprocess/src/core
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -39,8 +39,7 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("/home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug/test_add/cmake_install.cmake")
-  include("/home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug/test_sub/cmake_install.cmake")
+  include("/home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-debug/test_add/cmake_install.cmake")
 
 endif()
 
@@ -52,5 +51,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

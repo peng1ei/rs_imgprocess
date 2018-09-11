@@ -15,6 +15,9 @@ public:
 
     bool run();
 
+    template <typename T>
+    void processDataCore(ImgTool::ImgBlockData<T> &/*,...*/);
+
 private:
     std::string m_strInFile;
     std::string m_strOutFile;

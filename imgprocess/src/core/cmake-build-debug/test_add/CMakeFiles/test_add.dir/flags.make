@@ -6,5 +6,5 @@ CXX_FLAGS = -g
 
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/usr/include/gdal -I/home/penglei/code/tmp/imgprocess/src/core/test_add/../imgtools 
+CXX_INCLUDES = -I/usr/include/gdal -I/home/penglei/code/rs_imgprocess/imgprocess/src/core/test_add/../imgtools 
 

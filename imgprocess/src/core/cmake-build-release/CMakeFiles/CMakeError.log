@@ -1,0 +1,59 @@
+Determining if the pthread_create exist failed with the following output:
+Change Dir: /home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-release/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_48591/fast"
+make[1]: 进入目录“/home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-release/CMakeFiles/CMakeTmp”
+/usr/bin/make -f CMakeFiles/cmTC_48591.dir/build.make CMakeFiles/cmTC_48591.dir/build
+make[2]: 进入目录“/home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-release/CMakeFiles/CMakeTmp”
+Building C object CMakeFiles/cmTC_48591.dir/CheckSymbolExists.c.o
+/usr/bin/cc    -o CMakeFiles/cmTC_48591.dir/CheckSymbolExists.c.o   -c /home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-release/CMakeFiles/CMakeTmp/CheckSymbolExists.c
+Linking C executable cmTC_48591
+/snap/clion/38/bin/cmake/linux/bin/cmake -E cmake_link_script CMakeFiles/cmTC_48591.dir/link.txt --verbose=1
+/usr/bin/cc      CMakeFiles/cmTC_48591.dir/CheckSymbolExists.c.o  -o cmTC_48591 
+CMakeFiles/cmTC_48591.dir/CheckSymbolExists.c.o：在函数‘main’中：
+CheckSymbolExists.c:(.text+0x1b)：对‘pthread_create’未定义的引用
+collect2: error: ld returned 1 exit status
+CMakeFiles/cmTC_48591.dir/build.make:86: recipe for target 'cmTC_48591' failed
+make[2]: *** [cmTC_48591] Error 1
+make[2]: 离开目录“/home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-release/CMakeFiles/CMakeTmp”
+Makefile:121: recipe for target 'cmTC_48591/fast' failed
+make[1]: *** [cmTC_48591/fast] Error 2
+make[1]: 离开目录“/home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-release/CMakeFiles/CMakeTmp”
+
+File /home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-release/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+/* */
+#include <pthread.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef pthread_create
+  return ((int*)(&pthread_create))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+
+Determining if the function pthread_create exists in the pthreads failed with the following output:
+Change Dir: /home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-release/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_ac382/fast"
+make[1]: 进入目录“/home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-release/CMakeFiles/CMakeTmp”
+/usr/bin/make -f CMakeFiles/cmTC_ac382.dir/build.make CMakeFiles/cmTC_ac382.dir/build
+make[2]: 进入目录“/home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-release/CMakeFiles/CMakeTmp”
+Building C object CMakeFiles/cmTC_ac382.dir/CheckFunctionExists.c.o
+/usr/bin/cc   -DCHECK_FUNCTION_EXISTS=pthread_create   -o CMakeFiles/cmTC_ac382.dir/CheckFunctionExists.c.o   -c /snap/clion/38/bin/cmake/linux/share/cmake-3.12/Modules/CheckFunctionExists.c
+Linking C executable cmTC_ac382
+/snap/clion/38/bin/cmake/linux/bin/cmake -E cmake_link_script CMakeFiles/cmTC_ac382.dir/link.txt --verbose=1
+/usr/bin/cc  -DCHECK_FUNCTION_EXISTS=pthread_create    CMakeFiles/cmTC_ac382.dir/CheckFunctionExists.c.o  -o cmTC_ac382 -lpthreads 
+/usr/bin/x86_64-linux-gnu-ld: 找不到 -lpthreads
+collect2: error: ld returned 1 exit status
+CMakeFiles/cmTC_ac382.dir/build.make:86: recipe for target 'cmTC_ac382' failed
+make[2]: *** [cmTC_ac382] Error 1
+make[2]: 离开目录“/home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-release/CMakeFiles/CMakeTmp”
+Makefile:121: recipe for target 'cmTC_ac382/fast' failed
+make[1]: *** [cmTC_ac382/fast] Error 2
+make[1]: 离开目录“/home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-release/CMakeFiles/CMakeTmp”
+
+

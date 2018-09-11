@@ -59,20 +59,19 @@ RM = /snap/clion/38/bin/cmake/linux/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/penglei/code/tmp/imgprocess/src/core
+CMAKE_SOURCE_DIR = /home/penglei/code/rs_imgprocess/imgprocess/src/core
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug
+CMAKE_BINARY_DIR = /home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-debug
 
 #=============================================================================
 # Target rules for target CMakeFiles/imgprocess.dir
 
 # All Build rule for target.
 CMakeFiles/imgprocess.dir/all: test_add/CMakeFiles/test_add.dir/all
-CMakeFiles/imgprocess.dir/all: test_sub/CMakeFiles/test_sub.dir/all
 	$(MAKE) -f CMakeFiles/imgprocess.dir/build.make CMakeFiles/imgprocess.dir/depend
 	$(MAKE) -f CMakeFiles/imgprocess.dir/build.make CMakeFiles/imgprocess.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug/CMakeFiles --progress-num=1,2 "Built target imgprocess"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-debug/CMakeFiles --progress-num=1,2 "Built target imgprocess"
 .PHONY : CMakeFiles/imgprocess.dir/all
 
 # Include target in all.
@@ -82,9 +81,9 @@ all: CMakeFiles/imgprocess.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/imgprocess.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug/CMakeFiles 6
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-debug/CMakeFiles 4
 	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/imgprocess.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-debug/CMakeFiles 0
 .PHONY : CMakeFiles/imgprocess.dir/rule
 
 # Convenience name for target.
@@ -127,7 +126,7 @@ test_add/preinstall:
 test_add/CMakeFiles/test_add.dir/all:
 	$(MAKE) -f test_add/CMakeFiles/test_add.dir/build.make test_add/CMakeFiles/test_add.dir/depend
 	$(MAKE) -f test_add/CMakeFiles/test_add.dir/build.make test_add/CMakeFiles/test_add.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug/CMakeFiles --progress-num=3,4 "Built target test_add"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-debug/CMakeFiles --progress-num=3,4 "Built target test_add"
 .PHONY : test_add/CMakeFiles/test_add.dir/all
 
 # Include target in all.
@@ -137,9 +136,9 @@ all: test_add/CMakeFiles/test_add.dir/all
 
 # Build rule for subdir invocation for target.
 test_add/CMakeFiles/test_add.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-debug/CMakeFiles 2
 	$(MAKE) -f CMakeFiles/Makefile2 test_add/CMakeFiles/test_add.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-debug/CMakeFiles 0
 .PHONY : test_add/CMakeFiles/test_add.dir/rule
 
 # Convenience name for target.
@@ -154,61 +153,6 @@ test_add/CMakeFiles/test_add.dir/clean:
 
 # clean rule for target.
 clean: test_add/CMakeFiles/test_add.dir/clean
-
-.PHONY : clean
-
-#=============================================================================
-# Directory level rules for directory test_sub
-
-# Convenience name for "all" pass in the directory.
-test_sub/all: test_sub/CMakeFiles/test_sub.dir/all
-
-.PHONY : test_sub/all
-
-# Convenience name for "clean" pass in the directory.
-test_sub/clean: test_sub/CMakeFiles/test_sub.dir/clean
-
-.PHONY : test_sub/clean
-
-# Convenience name for "preinstall" pass in the directory.
-test_sub/preinstall:
-
-.PHONY : test_sub/preinstall
-
-#=============================================================================
-# Target rules for target test_sub/CMakeFiles/test_sub.dir
-
-# All Build rule for target.
-test_sub/CMakeFiles/test_sub.dir/all:
-	$(MAKE) -f test_sub/CMakeFiles/test_sub.dir/build.make test_sub/CMakeFiles/test_sub.dir/depend
-	$(MAKE) -f test_sub/CMakeFiles/test_sub.dir/build.make test_sub/CMakeFiles/test_sub.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug/CMakeFiles --progress-num=5,6 "Built target test_sub"
-.PHONY : test_sub/CMakeFiles/test_sub.dir/all
-
-# Include target in all.
-all: test_sub/CMakeFiles/test_sub.dir/all
-
-.PHONY : all
-
-# Build rule for subdir invocation for target.
-test_sub/CMakeFiles/test_sub.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug/CMakeFiles 2
-	$(MAKE) -f CMakeFiles/Makefile2 test_sub/CMakeFiles/test_sub.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug/CMakeFiles 0
-.PHONY : test_sub/CMakeFiles/test_sub.dir/rule
-
-# Convenience name for target.
-test_sub: test_sub/CMakeFiles/test_sub.dir/rule
-
-.PHONY : test_sub
-
-# clean rule for target.
-test_sub/CMakeFiles/test_sub.dir/clean:
-	$(MAKE) -f test_sub/CMakeFiles/test_sub.dir/build.make test_sub/CMakeFiles/test_sub.dir/clean
-.PHONY : test_sub/CMakeFiles/test_sub.dir/clean
-
-# clean rule for target.
-clean: test_sub/CMakeFiles/test_sub.dir/clean
 
 .PHONY : clean
 

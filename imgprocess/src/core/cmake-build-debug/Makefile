@@ -48,10 +48,10 @@ RM = /snap/clion/38/bin/cmake/linux/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/penglei/code/tmp/imgprocess/src/core
+CMAKE_SOURCE_DIR = /home/penglei/code/rs_imgprocess/imgprocess/src/core
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug
+CMAKE_BINARY_DIR = /home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-debug
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -80,9 +80,9 @@ edit_cache/fast: edit_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug/CMakeFiles /home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug/CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-debug/CMakeFiles /home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-debug/CMakeFiles/progress.marks
 	$(MAKE) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-debug/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -136,19 +136,6 @@ test_add/fast:
 	$(MAKE) -f test_add/CMakeFiles/test_add.dir/build.make test_add/CMakeFiles/test_add.dir/build
 .PHONY : test_add/fast
 
-#=============================================================================
-# Target rules for targets named test_sub
-
-# Build rule for target.
-test_sub: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 test_sub
-.PHONY : test_sub
-
-# fast build rule for target.
-test_sub/fast:
-	$(MAKE) -f test_sub/CMakeFiles/test_sub.dir/build.make test_sub/CMakeFiles/test_sub.dir/build
-.PHONY : test_sub/fast
-
 main.o: main.cpp.o
 
 .PHONY : main.o
@@ -186,7 +173,6 @@ help:
 	@echo "... edit_cache"
 	@echo "... imgprocess"
 	@echo "... test_add"
-	@echo "... test_sub"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"

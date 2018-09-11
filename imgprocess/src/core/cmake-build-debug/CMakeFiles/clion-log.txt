@@ -1,4 +1,4 @@
-/snap/clion/38/bin/cmake/linux/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /home/penglei/code/tmp/imgprocess/src/core
+/snap/clion/38/bin/cmake/linux/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /home/penglei/code/rs_imgprocess/imgprocess/src/core
 -- Configuring done
 -- Generating done
--- Build files have been written to: /home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug
+-- Build files have been written to: /home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-debug

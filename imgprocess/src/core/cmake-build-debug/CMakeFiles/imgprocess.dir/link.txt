@@ -1,1 +1,1 @@
-/usr/bin/c++  -g   CMakeFiles/imgprocess.dir/main.cpp.o  -o imgprocess -lgdal test_add/libtest_add.a test_sub/libtest_sub.a -lgdal 
+/usr/bin/c++  -g   CMakeFiles/imgprocess.dir/main.cpp.o  -o imgprocess -lgdal test_add/libtest_add.a -lgdal -lpthread -lpthread 

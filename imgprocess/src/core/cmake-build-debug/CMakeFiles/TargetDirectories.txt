@@ -1,9 +1,6 @@
-/home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug/CMakeFiles/edit_cache.dir
-/home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug/CMakeFiles/imgprocess.dir
-/home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug/test_add/CMakeFiles/rebuild_cache.dir
-/home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug/test_add/CMakeFiles/edit_cache.dir
-/home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug/test_add/CMakeFiles/test_add.dir
-/home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug/test_sub/CMakeFiles/rebuild_cache.dir
-/home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug/test_sub/CMakeFiles/edit_cache.dir
-/home/penglei/code/tmp/imgprocess/src/core/cmake-build-debug/test_sub/CMakeFiles/test_sub.dir
+/home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-debug/CMakeFiles/imgprocess.dir
+/home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-debug/test_add/CMakeFiles/rebuild_cache.dir
+/home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-debug/test_add/CMakeFiles/edit_cache.dir
+/home/penglei/code/rs_imgprocess/imgprocess/src/core/cmake-build-debug/test_add/CMakeFiles/test_add.dir
