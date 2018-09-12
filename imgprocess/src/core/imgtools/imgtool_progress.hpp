@@ -39,16 +39,14 @@ namespace ImgTool {
             int rate = (int)(pos);
             rate = pos*40 / 100;
 
-            if (rate <= 40)
-            {
+            if (rate <= 40) {
                 buf[rate] = '#';
                 if (rate < 40) {
                     printf("%s: [%-41s] [%d]%% [%c]\r", msg, buf, (int)pos, arr[rate%4]);
+                    fflush(stdout);
                 } else {
                     printf("%s: [%-41s] [%d]%% [Done] ", msg, buf, (int)pos);
                 }
-
-                fflush(stdout);
             }
 
 //           // 简单版本
