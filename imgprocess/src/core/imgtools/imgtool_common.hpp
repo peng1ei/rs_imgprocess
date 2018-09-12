@@ -19,6 +19,14 @@ class GDALDataset;
 
 namespace ImgTool {
 
+    template <typename T>
+    inline void ReleaseArray(T *pointer) {
+        if (pointer) {
+            delete []pointer;
+            pointer = nullptr;
+        }
+    }
+
     enum ImgInterleaveType {
         IIT_BSQ,
         IIT_BIL,
