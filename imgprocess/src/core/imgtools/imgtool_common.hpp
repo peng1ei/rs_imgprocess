@@ -184,7 +184,6 @@ namespace ImgTool {
             m_spectral = other.m_spectral;
             m_blkBufXSize = other.m_blkBufXSize;
             m_blkBufYSize = other.m_blkBufYSize;
-            //m_blkBufData = nullptr;
 
             allocateBuffer();
             memcpy(m_blkBufData, other.m_blkBufData, sizeof(T)*bufDims());
@@ -193,7 +192,7 @@ namespace ImgTool {
             return *this;
         }
 
-        void init(ImgSpatialSubset &blkSpat, ImgSpectralSubset &blkSpec,
+        void init(ImgSpatialSubset blkSpat, ImgSpectralSubset blkSpec,
                   int bufXSize, int bufYSize, ImgInterleaveType blkInterl = IIT_BIP) {
             m_spatial = blkSpat;
             m_spectral = blkSpec;
@@ -208,6 +207,11 @@ namespace ImgTool {
         ImgSpatialSubset& spatial() { return m_spatial; }
         void updateSpatial(int xOff, int yOff, int xSize, int ySize) {
             m_spatial.setRange(xOff, yOff, xSize, ySize);
+        }
+
+        // todo 加 const
+        void updateSpatial(ImgSpatialSubset &spatial) {
+            m_spatial = spatial;
         }
 
         ImgSpectralSubset& spectral() { return m_spectral; }
@@ -225,6 +229,9 @@ namespace ImgTool {
 
     public:
         T* bufData() { return m_blkBufData; }
+        void updataBufData(T *newBufData) {
+            memcpy(m_blkBufData, newBufData, sizeof(T)*bufDims());
+        }
 
     private:
         void allocateBuffer() {
@@ -269,18 +276,16 @@ namespace ImgTool {
             int yOff =data.spatial().yOff();
             int xSize = data.spatial().xSize();
             int ySize = data.spatial().ySize();
-            int count = data.spectral().count();
-            T *buffer = data.bufData();
 
             switch (data.interleave()) {
                 case ImgInterleaveType::IIT_BIP :
                 {
                     // todo 将全波段处理和部分波段处理分开
                     if ( CPLErr::CE_Failure == imgDataset_->RasterIO(GF_Read,
-                            xOff, yOff, xSize, ySize, buffer, xSize, ySize,
-                            imgDT_, count, data.spectral().map(),
-                            sizeof(T)*count,
-                            sizeof(T)*count*xSize,
+                            xOff, yOff, xSize, ySize, data.bufData(), xSize, ySize,
+                            imgDT_, data.spectral().count(), data.spectral().map(),
+                            sizeof(T)*data.spectral().count(),
+                            sizeof(T)*data.spectral().count()*xSize,
                             sizeof(T)) ) {
                         return false;
                     }
@@ -290,8 +295,8 @@ namespace ImgTool {
                 case ImgInterleaveType::IIT_BSQ :
                 {
                     if ( CPLErr::CE_Failure == imgDataset_->RasterIO(GF_Read,
-                            xOff, yOff, xSize, ySize, buffer, xSize, ySize,
-                            imgDT_, count, data.spectral().map(),
+                            xOff, yOff, xSize, ySize, data.bufData(), xSize, ySize,
+                            imgDT_, data.spectral().count(), data.spectral().map(),
                             0, 0, 0) ) {
                         return false;
                     }
@@ -301,10 +306,10 @@ namespace ImgTool {
                 case ImgInterleaveType::IIT_BIL :
                 {
                     if ( CPLErr::CE_Failure == imgDataset_->RasterIO(GF_Read,
-                            xOff, yOff, xSize, ySize, buffer, xSize, ySize,
-                            imgDT_, count, data.spectral().map(),
+                            xOff, yOff, xSize, ySize, data.bufData(), xSize, ySize,
+                            imgDT_, data.spectral().count(), data.spectral().map(),
                             sizeof(T),
-                            sizeof(T)*count*xSize,
+                            sizeof(T)*data.spectral().count()*xSize,
                             sizeof(T)*xSize) ) {
                         return false;
                     }
