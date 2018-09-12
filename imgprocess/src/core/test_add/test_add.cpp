@@ -5,6 +5,7 @@
 #include "test_add.h"
 #include "gdal_priv.h"
 #include "../imgtools/imgtool_mpsingmultmodel.hpp"
+#include "../imgtools/imgtool_mpcomputestatistics.hpp"
 
 test_add::test_add(const std::string &strInFile,
         const std::string &strOutFile)

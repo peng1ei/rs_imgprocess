@@ -3,6 +3,7 @@
   <component name="CMakeRunConfigurationManager" shouldGenerate="true" shouldDeleteObsolete="true" buildAllGenerated="true">
     <generated>
       <config projectName="imgprocess" targetName="imgprocess" />
+      <config projectName="imgprocess" targetName="test" />
       <config projectName="imgprocess" targetName="test_add" />
     </generated>
   </component>
@@ -14,70 +15,59 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="cd0f92a0-f495-46c0-b2ef-1aaba80d15cd" name="Default Changelist" comment="整体框架完成，测试可运行通过，增加部分注释">
+      <change afterPath="$PROJECT_DIR$/test/CMakeLists.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/test_computestatistics.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/test_computestatistics.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/test_mpcomputestatistics.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/test_mpcomputestatistics.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeCache.txt" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeCache.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/CMakeDirectoryInformation.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/CMakeDirectoryInformation.cmake" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/CMakeOutput.log" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/CMakeOutput.log" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile.cmake" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile2" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile2" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/TargetDirectories.txt" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/TargetDirectories.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/clion-log.txt" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/clion-log.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/core.dir/CXX.includecache" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/core.dir/DependInfo.cmake" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/core.dir/build.make" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/core.dir/cmake_clean.cmake" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/core.dir/depend.internal" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/core.dir/depend.make" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/core.dir/flags.make" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/core.dir/link.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/core.dir/main.cpp.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/core.dir/progress.make" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/img_process.dir/DependInfo.cmake" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/img_process.dir/build.make" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/img_process.dir/cmake_clean.cmake" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/img_process.dir/depend.make" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/img_process.dir/flags.make" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/img_process.dir/link.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/img_process.dir/progress.make" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/imgprocess.dir/CXX.includecache" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/imgprocess.dir/CXX.includecache" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/imgprocess.dir/DependInfo.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/imgprocess.dir/DependInfo.cmake" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/imgprocess.dir/build.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/imgprocess.dir/build.make" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/imgprocess.dir/depend.internal" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/imgprocess.dir/depend.internal" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/imgprocess.dir/flags.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/imgprocess.dir/flags.make" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/imgprocess.dir/depend.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/imgprocess.dir/depend.make" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/imgprocess.dir/link.txt" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/imgprocess.dir/link.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/imgprocess.dir/main.cpp.o" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/imgprocess.dir/main.cpp.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/imgprocess.dir/main.cpp.o" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/progress.marks" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/progress.marks" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/Makefile" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/cmake_install.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/cmake_install.cmake" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/imgprocess" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/imgprocess" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/imgprocess" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/imgprocess.cbp" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/imgprocess.cbp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/test_add/CMakeFiles/CMakeDirectoryInformation.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/test_add/CMakeFiles/CMakeDirectoryInformation.cmake" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/test_add/CMakeFiles/test_add.dir/CXX.includecache" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/test_add/CMakeFiles/test_add.dir/CXX.includecache" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/test_add/CMakeFiles/test_add.dir/DependInfo.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/test_add/CMakeFiles/test_add.dir/DependInfo.cmake" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/test_add/CMakeFiles/test_add.dir/build.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/test_add/CMakeFiles/test_add.dir/build.make" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/test_add/CMakeFiles/test_add.dir/depend.internal" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/test_add/CMakeFiles/test_add.dir/depend.internal" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/test_add/CMakeFiles/test_add.dir/depend.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/test_add/CMakeFiles/test_add.dir/depend.make" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/test_add/CMakeFiles/test_add.dir/flags.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/test_add/CMakeFiles/test_add.dir/flags.make" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/test_add/CMakeFiles/test_add.dir/test_add.cpp.o" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/test_add/CMakeFiles/test_add.dir/test_add.cpp.o" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/test_add/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/test_add/Makefile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/test_add/cmake_install.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/test_add/cmake_install.cmake" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/test_add/libtest_add.a" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/test_add/libtest_add.a" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/test_sub/CMakeFiles/CMakeDirectoryInformation.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/test_sub/CMakeFiles/CMakeDirectoryInformation.cmake" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/test_sub/CMakeFiles/test_sub.dir/CXX.includecache" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/test_sub/CMakeFiles/test_sub.dir/CXX.includecache" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/test_sub/CMakeFiles/test_sub.dir/DependInfo.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/test_sub/CMakeFiles/test_sub.dir/DependInfo.cmake" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/test_sub/CMakeFiles/test_sub.dir/build.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/test_sub/CMakeFiles/test_sub.dir/build.make" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/test_sub/CMakeFiles/test_sub.dir/depend.internal" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/test_sub/CMakeFiles/test_sub.dir/depend.internal" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/test_sub/CMakeFiles/test_sub.dir/test_sub.cpp.o" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/test_sub/CMakeFiles/test_sub.dir/test_sub.cpp.o" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/test_sub/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/test_sub/Makefile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/test_sub/cmake_install.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/test_sub/cmake_install.cmake" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/test_sub/libtest_sub.a" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/test_sub/libtest_sub.a" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/imgtools/imgtool_common.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/imgtools/imgtool_common.hpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/imgtools/imgtool_imgblockprocess.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/imgtools/imgtool_imgblockprocess.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/test_add/CMakeFiles/test_add.dir/progress.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/test_add/CMakeFiles/test_add.dir/progress.make" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/test_add/CMakeFiles/test_add.dir/test_add.cpp.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/test_add/libtest_add.a" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-release/CMakeCache.txt" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-release/CMakeCache.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-release/CMakeFiles/Makefile.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-release/CMakeFiles/Makefile.cmake" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-release/CMakeFiles/Makefile2" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-release/CMakeFiles/Makefile2" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-release/CMakeFiles/TargetDirectories.txt" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-release/CMakeFiles/TargetDirectories.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-release/CMakeFiles/imgprocess.dir/CXX.includecache" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-release/CMakeFiles/imgprocess.dir/CXX.includecache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-release/CMakeFiles/imgprocess.dir/DependInfo.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-release/CMakeFiles/imgprocess.dir/DependInfo.cmake" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-release/CMakeFiles/imgprocess.dir/build.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-release/CMakeFiles/imgprocess.dir/build.make" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-release/CMakeFiles/imgprocess.dir/depend.internal" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-release/CMakeFiles/imgprocess.dir/depend.internal" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-release/CMakeFiles/imgprocess.dir/depend.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-release/CMakeFiles/imgprocess.dir/depend.make" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-release/CMakeFiles/imgprocess.dir/link.txt" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-release/CMakeFiles/imgprocess.dir/link.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-release/CMakeFiles/imgprocess.dir/main.cpp.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-release/CMakeFiles/progress.marks" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-release/CMakeFiles/progress.marks" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-release/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-release/Makefile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-release/cmake_install.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-release/cmake_install.cmake" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-release/imgprocess" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-release/imgprocess.cbp" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-release/imgprocess.cbp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-release/test_add/CMakeFiles/test_add.dir/CXX.includecache" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-release/test_add/CMakeFiles/test_add.dir/CXX.includecache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-release/test_add/CMakeFiles/test_add.dir/depend.internal" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-release/test_add/CMakeFiles/test_add.dir/depend.internal" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-release/test_add/CMakeFiles/test_add.dir/depend.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-release/test_add/CMakeFiles/test_add.dir/depend.make" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-release/test_add/CMakeFiles/test_add.dir/progress.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-release/test_add/CMakeFiles/test_add.dir/progress.make" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-release/test_add/CMakeFiles/test_add.dir/test_add.cpp.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-release/test_add/libtest_add.a" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/main.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test_add/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/test_add/CMakeLists.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test_add/test_add.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/test_add/test_add.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test_add/test_add.h" beforeDir="false" afterPath="$PROJECT_DIR$/test_add/test_add.h" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
     <ignored path="$PROJECT_DIR$/cmake-build-release/" />
@@ -147,45 +137,48 @@
     <session id="256150540">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
+          <entry key="project.closed" value="4" />
           <entry key="project.open.time.0" value="1" />
-          <entry key="project.open.time.10" value="1" />
-          <entry key="project.opened" value="2" />
+          <entry key="project.open.time.10" value="3" />
+          <entry key="project.open.time.13" value="1" />
+          <entry key="project.open.time.14" value="1" />
+          <entry key="project.opened" value="6" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="cpp" value="1161" />
-          <entry key="h" value="53" />
-          <entry key="hpp" value="6002" />
-          <entry key="txt" value="107" />
+          <entry key="cpp" value="2869" />
+          <entry key="h" value="333" />
+          <entry key="hpp" value="11056" />
+          <entry key="txt" value="364" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="CMakeLists.txt" value="31" />
+          <entry key="CMakeLists.txt" value="49" />
           <entry key="Doxygen file" value="2" />
-          <entry key="ObjectiveC" value="7214" />
-          <entry key="PLAIN_TEXT" value="76" />
+          <entry key="ObjectiveC" value="14256" />
+          <entry key="PLAIN_TEXT" value="315" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
-          <entry key="CMakeLists.txt" value="4" />
+          <entry key="CMakeLists.txt" value="11" />
           <entry key="Disassembly" value="18" />
-          <entry key="ObjectiveC" value="18" />
+          <entry key="ObjectiveC" value="80" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.cidr.testingFrameworks.usages" />
       <usages-collector id="statistics.file.extensions.open">
         <counts>
-          <entry key="cpp" value="2" />
-          <entry key="functional" value="3" />
-          <entry key="h" value="6" />
-          <entry key="hpp" value="5" />
+          <entry key="cpp" value="19" />
+          <entry key="functional" value="4" />
+          <entry key="h" value="18" />
+          <entry key="hpp" value="37" />
           <entry key="imgprocess (disassembly)" value="18" />
           <entry key="thread" value="1" />
           <entry key="tuple" value="1" />
-          <entry key="txt" value="4" />
+          <entry key="txt" value="11" />
         </counts>
       </usages-collector>
     </session>
@@ -197,64 +190,25 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/imgtools/imgtool_common.hpp">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="126">
-              <caret line="151" column="16" selection-start-line="151" selection-start-column="16" selection-end-line="151" selection-end-column="16" />
-              <folding>
-                <element signature="e#119#139#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/imgtools/imgtool_mpsingmultmodel.hpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="247">
-              <caret line="85" column="8" selection-start-line="85" selection-start-column="8" selection-end-line="85" selection-end-column="8" />
+            <state relative-caret-position="1314">
+              <caret line="148" column="37" lean-forward="true" selection-start-line="148" selection-start-column="37" selection-end-line="148" selection-end-column="37" />
               <folding>
                 <element signature="e#136#165#0" expanded="true" />
-                <element signature="e#6066#6091#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/test_add/test_add.h">
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/imgtools/imgtool_mpcomputestatistics.hpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="324">
-              <caret line="18" column="59" selection-start-line="18" selection-start-column="59" selection-end-line="18" selection-end-column="59" />
+            <state relative-caret-position="2142">
+              <caret line="177" lean-forward="true" selection-start-line="177" selection-end-line="177" />
               <folding>
-                <element signature="e#101#118#0" expanded="true" />
-                <element signature="e#305#317#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/test_add/test_add.cpp">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2106">
-              <caret line="117" column="54" selection-start-line="117" selection-start-column="54" selection-end-line="117" selection-end-column="54" />
-              <folding>
-                <element signature="e#40#61#0" expanded="true" />
-                <element signature="e#4038#4050#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/main.cpp">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="522">
-              <caret line="29" selection-start-line="29" selection-end-line="29" />
-              <folding>
-                <element signature="e#0#19#0" expanded="true" />
+                <element signature="e#144#182#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -277,14 +231,22 @@
       <list>
         <option value="$PROJECT_DIR$/imgtools/CMakeLists.txt" />
         <option value="$PROJECT_DIR$/test_sub/CMakeLists.txt" />
-        <option value="$PROJECT_DIR$/CMakeLists.txt" />
         <option value="$PROJECT_DIR$/test_add/CMakeLists.txt" />
-        <option value="$PROJECT_DIR$/main.cpp" />
         <option value="$PROJECT_DIR$/imgtools/imgtool_imgblockprocess.hpp" />
         <option value="$PROJECT_DIR$/test_add/test_add.h" />
         <option value="$PROJECT_DIR$/test_add/test_add.cpp" />
-        <option value="$PROJECT_DIR$/imgtools/imgtool_mpsingmultmodel.hpp" />
+        <option value="$PROJECT_DIR$/CMakeLists.txt" />
+        <option value="$PROJECT_DIR$/test/test_mpcomputestatistics.h" />
+        <option value="$PROJECT_DIR$/test/test_computestatistics.h" />
+        <option value="$PROJECT_DIR$/test/CMakeLists.txt" />
         <option value="$PROJECT_DIR$/imgtools/imgtool_common.hpp" />
+        <option value="$PROJECT_DIR$/test/test_mpcomputestatistics.cpp" />
+        <option value="$PROJECT_DIR$/imgtools/imgtool_measure.hpp" />
+        <option value="$PROJECT_DIR$/test/test_computestatistics.cpp" />
+        <option value="$PROJECT_DIR$/main.cpp" />
+        <option value="$PROJECT_DIR$/imgtools/imgtool_mpcomputestatistics.hpp" />
+        <option value="$PROJECT_DIR$/imgtools/imgtool_progress.hpp" />
+        <option value="$PROJECT_DIR$/imgtools/imgtool_mpsingmultmodel.hpp" />
       </list>
     </option>
   </component>
@@ -315,12 +277,7 @@
             <path>
               <item name="imgprocess" type="b2602c69:ProjectViewProjectNode" />
               <item name="core" type="462c0819:PsiDirectoryNode" />
-              <item name="imgtools" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="imgprocess" type="b2602c69:ProjectViewProjectNode" />
-              <item name="core" type="462c0819:PsiDirectoryNode" />
-              <item name="test_add" type="462c0819:PsiDirectoryNode" />
+              <item name="test" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -330,6 +287,7 @@
     </panes>
   </component>
   <component name="PropertiesComponent">
+    <property name="SearchEverywhereHistoryKey" value="&#9;FILE&#9;file:///home/penglei/code/rs_imgprocess/imgprocess/src/core/imgtools/imgtool_mpsingmultmodel.hpp" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
@@ -358,6 +316,11 @@
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
+    <configuration name="test" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="imgprocess" TARGET_NAME="test" CONFIG_NAME="Debug">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="test_add" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="imgprocess" TARGET_NAME="test_add" CONFIG_NAME="Debug">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
@@ -366,6 +329,7 @@
     <list>
       <item itemvalue="Application.Build All" />
       <item itemvalue="Application.imgprocess" />
+      <item itemvalue="Application.test" />
       <item itemvalue="Application.test_add" />
     </list>
   </component>
@@ -381,7 +345,11 @@
       <updated>1536460999631</updated>
       <workItem from="1536461001366" duration="24326000" />
       <workItem from="1536502180370" duration="36909000" />
-      <workItem from="1536591409161" duration="1132000" />
+      <workItem from="1536591409161" duration="28122000" />
+      <workItem from="1536673507459" duration="1160000" />
+      <workItem from="1536674704844" duration="275000" />
+      <workItem from="1536675008849" duration="15380000" />
+      <workItem from="1536722754590" duration="4218000" />
     </task>
     <task id="LOCAL-00001" summary="修复 GDAL 读取文件时内存块的组织方式">
       <created>1536546455158</created>
@@ -404,11 +372,81 @@
       <option name="project" value="LOCAL" />
       <updated>1536627796598</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="实现影像的基本统计（多线程版）：&#10;均值、方差、协方差矩阵、相关系数矩阵">
+      <created>1536649844835</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1536649844835</updated>
+    </task>
+    <task id="LOCAL-00005" summary="修改默认分块方式为 方形">
+      <created>1536660621822</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1536660621822</updated>
+    </task>
+    <task id="LOCAL-00006" summary="将测试代码时间的功能分离出去">
+      <created>1536660731847</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1536660731847</updated>
+    </task>
+    <task id="LOCAL-00007" summary="测试代码时间工具">
+      <created>1536660764164</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1536660764164</updated>
+    </task>
+    <task id="LOCAL-00008" summary="修改默认分块大小为 128">
+      <created>1536661201743</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1536661201743</updated>
+    </task>
+    <task id="LOCAL-00009" summary="新增进度条（含控制台进度条）">
+      <created>1536731085455</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1536731085455</updated>
+    </task>
+    <task id="LOCAL-00010" summary="添加以毫秒为单位的输出接口">
+      <created>1536731167842</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1536731167842</updated>
+    </task>
+    <task id="LOCAL-00011" summary="部分修改">
+      <created>1536731235822</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1536731235822</updated>
+    </task>
+    <task id="LOCAL-00012" summary="新增继承至 ProgressFunctor">
+      <created>1536731438953</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1536731438953</updated>
+    </task>
+    <task id="LOCAL-00013" summary="新增继承至 ProgressFunctor">
+      <created>1536731493803</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1536731493803</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="62367000" />
+    <option name="totallyTimeSpent" value="110390000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -421,23 +459,22 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="25" width="1299" height="743" extended-state="6" />
-    <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.4987775" visible="true" weight="0.30071598" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.4987775" visible="true" weight="0.2601432" />
       <window_info id="Structure" order="1" sideWeight="0.5012225" side_tool="true" weight="0.24980111" />
       <window_info id="Favorites" order="2" sideWeight="0.5012225" side_tool="true" weight="0.24980111" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.59029436" weight="0.54882157" />
-      <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.49642006" weight="0.2636656" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.53699285" weight="0.22222222" />
+      <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.49642006" weight="0.2003367" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" sideWeight="0.4988067" weight="0.2165059" />
       <window_info anchor="bottom" id="Database Changes" order="7" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Messages" order="8" sideWeight="0.49482897" weight="0.3956229" />
-      <window_info anchor="bottom" id="Terminal" order="9" sideWeight="0.49960223" weight="0.3279743" />
-      <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.5003978" side_tool="true" visible="true" weight="0.32996634" />
-      <window_info active="true" anchor="bottom" id="Version Control" order="11" sideWeight="0.49960223" visible="true" weight="0.32996634" />
+      <window_info anchor="bottom" id="Messages" order="8" sideWeight="0.49085122" weight="0.2912458" />
+      <window_info anchor="bottom" id="Terminal" order="9" sideWeight="0.4988067" visible="true" weight="0.12794612" />
+      <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.5091488" side_tool="true" weight="0.24410774" />
+      <window_info anchor="bottom" id="Version Control" order="11" sideWeight="0.49960223" weight="0.32996634" />
       <window_info anchor="bottom" id="CMake" order="12" sideWeight="0.49960223" weight="0.3279743" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
@@ -465,7 +502,16 @@
     <MESSAGE value="修复 GDAL 读取文件时内存块的组织方式" />
     <MESSAGE value="添加 单生产者-多消费者 模式" />
     <MESSAGE value="整体框架完成，测试可运行通过，增加部分注释" />
-    <option name="LAST_COMMIT_MESSAGE" value="整体框架完成，测试可运行通过，增加部分注释" />
+    <MESSAGE value="实现影像的基本统计（多线程版）：&#10;均值、方差、协方差矩阵、相关系数矩阵" />
+    <MESSAGE value="修改默认分块方式为 方形" />
+    <MESSAGE value="将测试代码时间的功能分离出去" />
+    <MESSAGE value="测试代码时间工具" />
+    <MESSAGE value="修改默认分块大小为 128" />
+    <MESSAGE value="新增进度条（含控制台进度条）" />
+    <MESSAGE value="添加以毫秒为单位的输出接口" />
+    <MESSAGE value="部分修改" />
+    <MESSAGE value="新增继承至 ProgressFunctor" />
+    <option name="LAST_COMMIT_MESSAGE" value="新增继承至 ProgressFunctor" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/imgtools/CMakeLists.txt" />
@@ -502,20 +548,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/test_add/CMakeLists.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="162">
-          <caret line="9" column="44" selection-start-line="9" selection-start-column="44" selection-end-line="9" selection-end-column="44" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="89">
-          <caret line="19" selection-start-line="19" selection-end-line="19" selection-end-column="30" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file:///usr/include/c++/7/thread">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="210">
@@ -530,17 +562,69 @@
         </state>
       </provider>
     </entry>
-    <entry file="file:///usr/include/c++/7/functional">
+    <entry file="file://$PROJECT_DIR$/test_add/CMakeLists.txt">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="18">
-          <caret line="510" column="74" selection-start-line="510" selection-start-column="74" selection-end-line="510" selection-end-column="74" />
+        <state relative-caret-position="162">
+          <caret line="9" column="31" selection-end-line="9" selection-end-column="61" />
         </state>
       </provider>
     </entry>
-    <entry file="file:///usr/include/c++/7/bits/std_function.h">
+    <entry file="file://$PROJECT_DIR$/test_add/test_add.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="201">
-          <caret line="463" column="11" selection-start-line="463" selection-start-column="11" selection-end-line="463" selection-end-column="11" />
+        <state relative-caret-position="342">
+          <caret line="31" column="43" lean-forward="true" selection-start-line="15" selection-start-column="3" selection-end-line="31" selection-end-column="43" />
+          <folding>
+            <element signature="e#40#61#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test_add/test_add.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="191">
+          <caret line="17" column="4" selection-start-line="17" selection-start-column="4" selection-end-line="18" selection-end-column="61" />
+          <folding>
+            <element signature="e#101#118#0" expanded="true" />
+            <element signature="e#305#317#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="25" column="12" lean-forward="true" selection-start-line="25" selection-start-column="12" selection-end-line="25" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test/CMakeLists.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="108">
+          <caret line="6" column="60" selection-start-line="6" selection-start-column="60" selection-end-line="6" selection-end-column="60" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test/test_computestatistics.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="288">
+          <caret line="16" column="10" selection-start-line="16" selection-start-column="10" selection-end-line="16" selection-end-column="10" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test/test_mpcomputestatistics.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="72">
+          <caret line="10" column="6" selection-start-line="10" selection-start-column="6" selection-end-line="10" selection-end-column="6" />
+          <folding>
+            <element signature="e#134#151#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/include/c++/7/bits/std_mutex.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="84">
+          <caret line="45" selection-start-line="45" selection-end-line="45" />
         </state>
       </provider>
     </entry>
@@ -554,55 +638,112 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/test_add/test_add.h">
+    <entry file="file:///usr/include/stdio.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="324">
-          <caret line="18" column="59" selection-start-line="18" selection-start-column="59" selection-end-line="18" selection-end-column="59" />
+        <state relative-caret-position="126">
+          <caret line="203" column="11" selection-start-line="203" selection-start-column="11" selection-end-line="203" selection-end-column="11" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/include/c++/7/functional">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="120">
+          <caret line="551" selection-start-line="551" selection-end-line="551" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/include/c++/7/bits/std_function.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="174">
+          <caret line="706" selection-start-line="706" selection-end-line="706" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/include/c++/7/bits/invoke.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="160">
+          <caret line="96" selection-start-line="96" selection-end-line="96" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test/test_mpcomputestatistics.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="594">
+          <caret line="33" selection-start-line="33" selection-end-line="33" />
           <folding>
-            <element signature="e#101#118#0" expanded="true" />
-            <element signature="e#305#317#0" expanded="true" />
+            <element signature="e#41#78#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/test_add/test_add.cpp">
+    <entry file="file://$PROJECT_DIR$/test/test_computestatistics.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2106">
-          <caret line="117" column="54" selection-start-line="117" selection-start-column="54" selection-end-line="117" selection-end-column="54" />
+        <state relative-caret-position="180">
+          <caret line="133" column="5" selection-start-line="133" selection-start-column="5" selection-end-line="133" selection-end-column="5" />
           <folding>
-            <element signature="e#40#61#0" expanded="true" />
-            <element signature="e#4038#4050#0" expanded="true" />
+            <element signature="e#41#76#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/imgtools/imgtool_progress.hpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="126">
+          <caret line="46" column="24" lean-forward="true" selection-start-line="46" selection-start-column="24" selection-end-line="46" selection-end-column="24" />
+          <folding>
+            <element signature="e#122#143#0" expanded="true" />
+            <element signature="e#231#256#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/main.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="522">
-          <caret line="29" selection-start-line="29" selection-end-line="29" />
+        <state relative-caret-position="126">
+          <caret line="48" selection-start-line="48" selection-end-line="48" />
           <folding>
             <element signature="e#0#19#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/imgtools/imgtool_mpsingmultmodel.hpp">
+    <entry file="file://$PROJECT_DIR$/imgtools/imgtool_common.hpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="247">
-          <caret line="85" column="8" selection-start-line="85" selection-start-column="8" selection-end-line="85" selection-end-column="8" />
+        <state relative-caret-position="486">
+          <caret line="291" column="26" selection-start-line="291" selection-start-column="26" selection-end-line="291" selection-end-column="26" />
           <folding>
-            <element signature="e#136#165#0" expanded="true" />
-            <element signature="e#6066#6091#0" expanded="true" />
+            <element signature="e#119#139#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/imgtools/imgtool_common.hpp">
+    <entry file="file://$PROJECT_DIR$/imgtools/imgtool_measure.hpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="126">
-          <caret line="151" column="16" selection-start-line="151" selection-start-column="16" selection-end-line="151" selection-end-column="16" />
+        <state relative-caret-position="306">
+          <caret line="44" column="9" lean-forward="true" selection-start-line="44" selection-start-column="9" selection-end-line="44" selection-end-column="9" />
           <folding>
-            <element signature="e#119#139#0" expanded="true" />
+            <element signature="e#134#151#0" expanded="true" />
+            <element signature="e#919#963#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/imgtools/imgtool_mpsingmultmodel.hpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1314">
+          <caret line="148" column="37" lean-forward="true" selection-start-line="148" selection-start-column="37" selection-end-line="148" selection-end-column="37" />
+          <folding>
+            <element signature="e#136#165#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/imgtools/imgtool_mpcomputestatistics.hpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2142">
+          <caret line="177" lean-forward="true" selection-start-line="177" selection-end-line="177" />
+          <folding>
+            <element signature="e#144#182#0" expanded="true" />
           </folding>
         </state>
       </provider>
