@@ -8,6 +8,7 @@
 
 #include <chrono>
 #include <functional>
+#include <iostream>
 
 namespace ImgTool {
 
@@ -28,10 +29,18 @@ namespace ImgTool {
 
             auto duration = std::chrono::duration_cast<TimeT>
                     (std::chrono::system_clock::now() - start);
+
             return duration.count();
         }
 
+
+
     };
+
+    template<typename TimeT = std::chrono::milliseconds>
+    void printRunTime(typename TimeT::rep time) {
+        std::cout << "[Time: " << time << " ms]\n";
+    }
 
     // 使用
     /*
