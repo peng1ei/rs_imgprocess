@@ -6,6 +6,7 @@
 #define IMGPROCESS_IMGTOOL_MPSINGMULTMODEL_HPP
 
 #include "imgtool_common.hpp"
+#include "imgtool_progress.hpp"
 #include <vector>
 #include <thread>
 #include <mutex>
@@ -38,7 +39,7 @@ namespace ImgTool {
         };
 
         template <typename T>
-        class MpSingleMultiModel {
+        class MpSingleMultiModel : public ProgressFunctor {
         public:
             // 全波段处理
             MpSingleMultiModel(int consumerThreadsCount, int bufItemCount,
@@ -65,6 +66,7 @@ namespace ImgTool {
             // 读数据线程 "main()"
             void producerTask() {
 
+                int pos = 0;
                 switch (blkType_) {
 
                     case ImgBlockType::IBT_SQUARE :
@@ -81,6 +83,7 @@ namespace ImgTool {
                                     xBlockSize = imgXSize_ - j;
 
                                 produceBlockData(j, i, xBlockSize, yBlockSize);
+                                if (progress_) progress_((pos++)*100.0/bufQueue_.produceItemCount_);
                             }
                         }
 
@@ -95,16 +98,20 @@ namespace ImgTool {
                         // 处理完整块
                         for (int i = 0; i < blockNums; i++) {
                             produceBlockData(0, i*blkSize_, imgXSize_, blkSize_);
+                            if (progress_) progress_((pos++)*100.0/bufQueue_.produceItemCount_);
                         }
 
                         // 处理剩余的最后一块（非完整块）
                         if (leftLines > 0) {
                             produceBlockData(0, blockNums*blkSize_, imgXSize_, leftLines);
+                            if (progress_) progress_((pos++)*100.0/bufQueue_.produceItemCount_);
                         }
 
                         break;
                     }
                 }// end switch
+
+                if (progress_) progress_(100);
             }
 
             // 生产块数据
@@ -139,7 +146,8 @@ namespace ImgTool {
                 auto funcCore = std::forward<std::function<void(ImgBlockData<T> &)>>(funcProcessDataCore);
 
                 // 用于从缓冲区中复制一块数据，进行独立处理（独立于线程）
-                ImgBlockData<T> data = bufQueue_.items_[0];
+                ImgBlockData<T> data;
+
                 while (true) {
 
                     std::unique_lock<std::mutex> lock(bufQueue_.mutexConsumedItemCount_);
@@ -193,7 +201,7 @@ namespace ImgTool {
                 //        std::forward<Args>(args)...);
                 //consumeTasks_.emplace_back([consumer](){(consumer)();});
                 consumeTasks_.emplace_back(std::bind(std::forward<Fn>(fn), std::placeholders::_1,
-                                                     std::forward<Args>(args)...));
+                        std::forward<Args>(args)...));
             }
 
         public:
