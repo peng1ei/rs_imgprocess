@@ -6,12 +6,13 @@
 #define IMGPROCESS_IMGTOOL_MPCOMPUTESTATISTICS_HPP
 
 #include "imgtool_mpsingmultmodel.hpp"
+#include "imgtool_progress.hpp"
 
 class GDALDataset;
 
 namespace ImgTool {
 
-    class MpComputeStatistics {
+    class MpComputeStatistics : public ProgressFunctor {
     public:
         MpComputeStatistics(GDALDataset *dataset, int blkSize = 128) {
             imgDataset_ = dataset;
@@ -45,6 +46,7 @@ namespace ImgTool {
             // todo 根据实际硬件条件（CPU核数）及任务量去决定
             ImgTool::Mp::MpSingleMultiModel<T> mp(threadCount_, threadCount_,
                     imgDataset_, blkSize_);
+            mp.setProgress(progress_, std::placeholders::_1);
 
             // setp 2: 设置每一个消费者线程核心处理函数
             // 可以设置各个线程独立的参数
