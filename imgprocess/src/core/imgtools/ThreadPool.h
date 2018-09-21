@@ -10,14 +10,17 @@
 #include <future>
 #include <functional>
 #include <stdexcept>
+#include <iostream>
 
 class ThreadPool {
 public:
+    ThreadPool();
     ThreadPool(size_t);
     template<class F, class... Args>
     auto enqueue(F&& f, Args&&... args) 
         -> std::future<typename std::result_of<F(Args...)>::type>;
     ~ThreadPool();
+
 private:
     // need to keep track of threads so we can join them
     std::vector< std::thread > workers;
@@ -52,9 +55,36 @@ inline ThreadPool::ThreadPool(size_t threads)
                         this->tasks.pop();
                     }
 
+                    // 任务处理完成后，与之相关的 future、promise就会销毁
                     task();
                 }
             }
+        );
+}
+
+inline ThreadPool::ThreadPool() : stop(false) {
+    for(size_t i = 0;i<1;++i)
+        workers.emplace_back(
+                [this]
+                {
+                    for(;;)
+                    {
+                        std::function<void()> task;
+
+                        {
+                            std::unique_lock<std::mutex> lock(this->queue_mutex);
+                            this->condition.wait(lock,
+                                                 [this]{ return this->stop || !this->tasks.empty(); });
+                            if(this->stop && this->tasks.empty())
+                                return;
+                            task = std::move(this->tasks.front());
+                            this->tasks.pop();
+                        }
+
+                        // 任务处理完成后，与之相关的 future、promise就会销毁
+                        task();
+                    }
+                }
         );
 }
 
@@ -68,7 +98,7 @@ auto ThreadPool::enqueue(F&& f, Args&&... args)
     auto task = std::make_shared< std::packaged_task<return_type()> >(
             std::bind(std::forward<F>(f), std::forward<Args>(args)...)
         );
-        
+
     std::future<return_type> res = task->get_future();
     {
         std::unique_lock<std::mutex> lock(queue_mutex);
@@ -86,6 +116,7 @@ auto ThreadPool::enqueue(F&& f, Args&&... args)
 // the destructor joins all threads
 inline ThreadPool::~ThreadPool()
 {
+    std::cout << "end0" << std::endl;
     {
         std::unique_lock<std::mutex> lock(queue_mutex);
         stop = true;
@@ -93,6 +124,8 @@ inline ThreadPool::~ThreadPool()
     condition.notify_all();
     for(std::thread &worker: workers)
         worker.join();
+
+    std::cout << "end1" << std::endl;
 }
 
 #endif
