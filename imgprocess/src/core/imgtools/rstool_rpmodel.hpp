@@ -6,8 +6,8 @@
 #ifndef IMGPROCESS_RSTOOL_RPMODEL_HPP
 #define IMGPROCESS_RSTOOL_RPMODEL_HPP
 
-#include "rstool_threadpool.h"
 #include "rstool_common.h"
+#include "rstool_threadpool.h"
 
 namespace RSTool {
 
@@ -16,6 +16,7 @@ namespace RSTool {
         template <typename T>
         class MpRPModel {
         public:
+
             /**
              * 用于“读-处理”算法模型
              * @param infile            输入待处理的文件
@@ -38,13 +39,14 @@ namespace RSTool {
             } // end MpGdalIO
 
         public:
-            // 为每个消费者添加处理函数
+            // 为每个消费者线程指定处理函数（因为每个线程所需要的参数可能不一样）
             template <class Fn, class... Args>
             void emplaceTask(Fn &&fn, Args &&... args) {
                 consumerTasks_.emplace_back(std::bind(std::forward<Fn>(fn), std::placeholders::_1,
                                                       std::forward<Args>(args)...));
             }
 
+            // 启动所有消费者线程，会阻塞调用者线程，直到所有消费者线程处理完成
             void run() {
                 assignWorkload();
 
@@ -167,7 +169,8 @@ namespace RSTool {
 
             // 每个消费者线程所处理的核心函数对象
             // 可以从主线程中接收不同的参数（主要是为了将主线程的任务并行化）
-            // 块处理的核心功能，由使用者负责实现，可传入 lambda、成员函数、全局函数、函数对象等
+            // 块处理的核心功能，由使用者负责实现，可传入可调用对象：
+            //      lambda、成员函数、全局函数、函数对象以及bind表达式等
             std::vector< std::function<void(DataChunk<T> &)>> consumerTasks_;
         };
 
