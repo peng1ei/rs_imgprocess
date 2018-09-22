@@ -156,6 +156,15 @@ namespace RSTool {
         public:
             // 一般来说，进行读文件时，需要读的波段范围和数据在内存中的组织方式是已知的，
             // 如果采用分块读取，后续更新的只是数据块的空间范围，波段范围只需初始化一次即可
+
+            /**
+             *
+             * @param infile        输入文件
+             * @param specDims      指定光谱范围
+             * @param intl          指定数据在内存中的组织方式
+             * @param blkSize       指定分块大小
+             * @param poolsCount    指定需要并行读取的线程数量
+             */
             MpGDALRead(const std::string &infile, const SpectralDimes &specDims,
                     Interleave &intl = Interleave::BIP,
                     int blkSize = 128, int poolsCount = 4)
@@ -168,17 +177,19 @@ namespace RSTool {
                 }
             }
 
-            // 给每个读线程添加任务
-            // i - 第 i 个读线程，索引从 0 开始
-            // spatDims - 数据块的空间范围
+            /**
+             * 给每个读线程添加任务
+             * @param i         第 i 个读线程，索引从 0 开始
+             * @param spatDims  数据块的空间范围
+             */
             void enqueue(int i, const SpatialDims &spatDims) {
                 GDALDataset *ds = datasets_[i];
                 pools_[i].enqueue([this, ds, spatDims] {
 
                     auto start = std::chrono::high_resolution_clock::now();
 
-                    DataChunk<T> data(spatDims, specDims_);
-                    ReadDataChunk<T> read(ds, specDims_);
+                    DataChunk<T> data(spatDims, specDims_, intl_);
+                    ReadDataChunk<T> read(ds, specDims_, intl_);
                     if ( !read(spatDims.xOff(), spatDims.yOff(),
                                spatDims.xSize(), spatDims.ySize(), data.data())) {
                         throw std::runtime_error("Reading data chunk is faild.");
