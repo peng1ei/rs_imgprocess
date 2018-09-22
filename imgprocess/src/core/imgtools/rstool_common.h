@@ -9,6 +9,7 @@
 #include "gdal/gdal_priv.h"
 #include <vector>
 #include <type_traits>
+#include <iostream>
 
 namespace RSTool {
 
@@ -141,6 +142,8 @@ namespace RSTool {
             : dims_(other.dims_), intl_(other.intl_){
             allocMemory();
             mempcpy(data_, other.data_, sizeof(T)*dims_.elemCount());
+
+            std::cout << "copy ctor" << std::endl;
         }
 
         DataChunk& operator= (const DataChunk &other) {
@@ -154,6 +157,8 @@ namespace RSTool {
             intl_ = other.intl_;
             allocMemory();
             mempcpy(data_, other.data_, sizeof(T)*dims_.elemCount());
+
+            std::cout << "copy assignment" << std::endl;
         }
 
         // 移动构造函数
@@ -163,6 +168,8 @@ namespace RSTool {
             // 偷取
             data_ = rother.data_;
             rother.data_ = nullptr;
+
+            std::cout << "move ctor" << std::endl;
         }
 
         // 移动赋值函数
@@ -176,6 +183,8 @@ namespace RSTool {
             intl_ = rother.intl_;
             data_ = rother.data_;
             rother.data_ = nullptr;
+
+            std::cout << "move assignment" << std::endl;
         }
 
         ~DataChunk() {
@@ -361,6 +370,150 @@ namespace RSTool {
                     break;
                 }
 
+            }// end switch
+
+            return true;
+        }
+
+    private:
+        GDALDataset *dataset_;
+        GDALDataType dataType_;
+        SpectralDimes specDims_;
+        Interleave intl_;
+        int bandCount_;
+        int *bandMap_;
+    };
+
+    // 仿函数，用于写入分块数据
+    template <typename T>
+    class WriteDataChunk {
+    public:
+        WriteDataChunk(GDALDataset *dataset) {
+            // todo 能否在构造函数中抛出异常 ???
+            if (!dataset)
+                throw std::runtime_error("GDALDataset is nullptr.");
+
+            dataset_ = dataset;
+            dataType_ = toGDALDataType<T>();
+            bandCount_ = 0;
+            bandMap_ = nullptr;
+        }
+
+        WriteDataChunk(GDALDataset *dataset, const SpectralDimes &specDims,
+                      Interleave intl = Interleave::BIP)
+                : specDims_(specDims), intl_(intl) {
+
+            // todo 能否在构造函数中抛出异常 ???
+            if (!dataset)
+                throw std::runtime_error("GDALDataset is nullptr.");
+
+            dataset_ = dataset;
+            dataType_ = toGDALDataType<T>();
+            bandCount_ = specDims_.bandCount();
+            bandMap_ = specDims_.bandMap();
+        }
+
+        // 全波段处理
+        WriteDataChunk(GDALDataset *dataset, int bandCount,
+                      Interleave intl = Interleave::BIP)
+                : bandCount_(bandCount), bandMap_(nullptr), intl_(intl), specDims_(0){
+
+            // todo 能否在构造函数中抛出异常 ???
+            if (!dataset)
+                throw std::runtime_error("GDALDataset is nullptr.");
+
+            dataset_ = dataset;
+            dataType_ = toGDALDataType<T>();
+        }
+
+        bool operator() (DataChunk<T> &data) {
+            int xOff = data.dims().xOff();
+            int yOff = data.dims().yOff();
+            int xSize = data.dims().xSize();
+            int ySize = data.dims().ySize();
+
+            switch (data.interleave()) {
+                case Interleave::BIP :
+                {
+                    // todo 将全波段处理和部分波段处理分开
+                    if ( CPLErr::CE_Failure == dataset_->RasterIO(GF_Write,
+                            xOff, yOff, xSize, ySize, data.data(), xSize, ySize,
+                            dataType_, data.dims().bandCount(), data.dims().bandMap(),
+                            sizeof(T)*data.dims().bandCount(),
+                            sizeof(T)*data.dims().bandCount()*xSize,
+                            sizeof(T)) ) {
+                        return false;
+                    }
+                    break;
+                }
+
+                case Interleave::BSQ :
+                {
+                    if ( CPLErr::CE_Failure == dataset_->RasterIO(GF_Write,
+                            xOff, yOff, xSize, ySize, data.data(), xSize, ySize,
+                            dataType_, data.dims().bandCount(), data.dims().bandMap(),
+                            0, 0, 0) ) {
+                        return false;
+                    }
+                    break;
+                }
+
+                case Interleave::BIL :
+                {
+                    if ( CPLErr::CE_Failure == dataset_->RasterIO(GF_Write,
+                            xOff, yOff, xSize, ySize, data.data(), xSize, ySize,
+                            dataType_, data.dims().bandCount(), data.dims().bandMap(),
+                            sizeof(T),
+                            sizeof(T)*data.dims().bandCount()*xSize,
+                            sizeof(T)*xSize) ) {
+                        return false;
+                    }
+                    break;
+                }
+            }// end switch
+
+            return true;
+        }
+
+        bool operator() (int xOff, int yOff, int xSize, int ySize, T *data) {
+            switch (intl_) {
+                case Interleave::BIP :
+                {
+                    // todo 将全波段处理和部分波段处理分开
+                    if ( CPLErr::CE_Failure == dataset_->RasterIO(GF_Write,
+                            xOff, yOff, xSize, ySize, data, xSize, ySize,
+                            dataType_, bandCount_, bandMap_,
+                            sizeof(T)*bandCount_,
+                            sizeof(T)*bandCount_*xSize,
+                            sizeof(T)) ) {
+                        return false;
+                    }
+                    break;
+                }
+
+                case Interleave::BSQ :
+                {
+                    if ( CPLErr::CE_Failure == dataset_->RasterIO(GF_Write,
+                            xOff, yOff, xSize, ySize, data, xSize, ySize,
+                            dataType_, bandCount_, bandMap_,
+                            0, 0, 0) ) {
+                        return false;
+                    }
+                    break;
+                }
+
+                case Interleave::BIL :
+                {
+                    if ( CPLErr::CE_Failure == dataset_->RasterIO(GF_Write,
+                            xOff, yOff, xSize, ySize, data, xSize, ySize,
+                            dataType_, bandCount_, bandMap_,
+                            sizeof(T),
+                            sizeof(T)*bandCount_*xSize,
+                            sizeof(T)*xSize) ) {
+                        return false;
+                    }
+                    break;
+                }
             }// end switch
 
             return true;
