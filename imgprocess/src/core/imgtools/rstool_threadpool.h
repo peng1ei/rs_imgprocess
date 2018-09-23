@@ -228,8 +228,22 @@ namespace RSTool {
             std::vector<GDALDataset*> datasets_;
         };
 
+        // $1
+        template <typename T>
+        std::queue<DataChunk<T>> MpGDALRead<T>::readQueue_; // 用于缓存从磁盘读取的数据
+
         template <typename T>
         int MpGDALRead<T>::readQueueMaxSize_ = 16;
+
+        template <typename T>
+        std::mutex MpGDALRead<T>::mutexReadQueue_;
+
+        template <typename T>
+        std::condition_variable MpGDALRead<T>::condReadQueueNotEmpty_;
+
+        template <typename T>
+        std::condition_variable MpGDALRead<T>::condReadQueueNotFull_;
+        // $1
 
         template <typename T>
         class MpGDALWrite {

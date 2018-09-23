@@ -31,13 +31,16 @@ namespace RSTool {
                     : infile_(infile), specDims_(specDims), intl_(intl),
                     blkSize_(blkSize), readQueueMaxSize_(readQueueMaxSize),
                     readThreadsCount_(readThreadsCount_),
-                    mpRead_(infile_, specDims_, intl_, blkSize_, readThreadsCount_) {
+                    mpRead_(infile_, specDims_, intl_, readThreadsCount_) {
 
                 MpGDALRead<T>::readQueueMaxSize_ = readQueueMaxSize;
+                assignWorkload();
 
             } // end MpGdalIO
 
         public:
+            int consumerCount() const { return consumerCount_; }
+
             // 为每个消费者线程指定处理函数（因为每个线程所需要的参数可能不一样）
             template <class Fn, class... Args>
             void emplaceTask(Fn &&fn, Args &&... args) {
@@ -47,7 +50,7 @@ namespace RSTool {
 
             // 启动所有消费者线程，会阻塞调用者线程，直到所有消费者线程处理完成
             void run() {
-                assignWorkload();
+                //assignWorkload();
 
                 for (int i = 0; i < consumerCount_; i++) {
                     consumerThreads_.emplace_back(std::thread(&MpRPModel<T>::consumerTask,

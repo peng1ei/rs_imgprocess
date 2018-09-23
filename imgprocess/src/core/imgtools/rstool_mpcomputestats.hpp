@@ -5,55 +5,91 @@
 #ifndef IMGPROCESS_RSTOOL_MPCOMPUTESTATS_HPP
 #define IMGPROCESS_RSTOOL_MPCOMPUTESTATS_HPP
 
-#include "rstool_mpgdalio.hpp"
+//#include "rstool_mpgdalio.hpp"
+#include "rstool_rpmodel.hpp"
 
 namespace RSTool {
 
     class MpComputeStatistics {
     public:
-        MpComputeStatistics(GDALDataset *dataset, int blkSize = 128) {
-            imgDataset_ = dataset;
-            blkSize_ = blkSize;
-            imgBandCount_ = dataset->GetRasterCount();
-
-            // todo 根据当前机器 CPU 核数以及需要处理的数据量去设置
-            threadCount_ = 4;
-        }
-
         MpComputeStatistics(const std::string &infile, int blkSize = 128)
-                : infile_(infile) {
-            GDALAllRegister();
-
-            imgDataset_ = (GDALDataset*)GDALOpen(infile.c_str(), GA_ReadOnly);
-            blkSize_ = blkSize;
-            imgBandCount_ = imgDataset_->GetRasterCount();
-
-            // todo 根据当前机器 CPU 核数以及需要处理的数据量去设置
-            threadCount_ = 4;
+                : infile_(infile), blkSize_(blkSize), threadCount_(1),
+                  imgDataset_(nullptr) {
         }
 
         virtual ~MpComputeStatistics() {
-            for (int i = 0; i < threadCount_; i++) {
-                delete[](means_[i]);
-                means_[i] = nullptr;
+            for (auto &mean : means_) {
+                ReleaseArray(mean);
+            }
 
-                delete[](stdDevs_[i]);
-                stdDevs_[i] = nullptr;
+            for (auto &stdDev : stdDevs_) {
+                ReleaseArray(stdDev);
+            }
 
-                delete[](covariances_[i]);
-                covariances_[i] = nullptr;
+            for (auto &covariance : covariances_) {
+                ReleaseArray(covariance);
             }
         }
 
-        // 传入的统计量需要初始化为 0
-        template <typename T>
-        bool run(double *mean, double *stdDev,
-                 double *covariance, double *correlation = nullptr) {
+        /**
+         * 计算影像的基本统计信息
+         * @param mean          均值
+         * @param stdDev        标准差
+         * @param covariance    协方差矩阵
+         * @param correlation   相关系数矩阵
+         * @return 成功返回 true，失败返回 false
+         */
+        bool run(double *mean,
+                double *stdDev,
+                double *covariance,
+                double *correlation = nullptr) {
 
-            // step 1: 创建一个 “单-多” 模型对象
-            // todo 线程数和缓冲区队列数量的控制
-            // todo 根据实际硬件条件（CPU核数）及任务量去决定
-            MpGdalIO<T> mp(infile_, "");
+            GDALAllRegister();
+            imgDataset_ = (GDALDataset*)GDALOpen(infile_.c_str(), GA_ReadOnly);
+            if (imgDataset_ == nullptr) {
+                return false;
+            }
+
+            imgBandCount_ = imgDataset_->GetRasterCount();
+            GDALDataType dataType = imgDataset_->GetRasterBand(1)->GetRasterDataType();
+            switch (dataType) {
+                case GDALDataType::GDT_Byte:
+                    exec<unsigned char>(mean, stdDev, covariance, correlation);
+                    break;
+                case GDALDataType::GDT_UInt16:
+                    exec<unsigned short>(mean, stdDev, covariance, correlation);
+                    break;
+                case GDALDataType::GDT_Int16:
+                    exec<short>(mean, stdDev, covariance, correlation);
+                    break;
+                case GDALDataType::GDT_UInt32:
+                    exec<unsigned int>(mean, stdDev, covariance, correlation);
+                    break;
+                case GDALDataType::GDT_Int32:
+                    exec<int>(mean, stdDev, covariance, correlation);
+                    break;
+                case GDALDataType::GDT_Float32:
+                    exec<float>(mean, stdDev, covariance, correlation);
+                    break;
+                case GDALDataType::GDT_Float64:
+                    exec<double>(mean, stdDev, covariance, correlation);
+                    break;
+                default:
+                    return false;
+            }
+
+            return true;
+        }
+
+    private:
+        template <typename T>
+        void exec(double *mean,
+                  double *stdDev,
+                  double *covariance,
+                  double *correlation) {
+            // step 1: 创建一个 “rp-model” 对象
+            Mp::MpRPModel<T> rp(infile_, SpectralDimes(imgBandCount_));
+            threadCount_ = rp.consumerCount();
 
             // setp 2: 设置每一个消费者线程核心处理函数
             // 可以设置各个线程独立的参数
@@ -62,7 +98,7 @@ namespace RSTool {
                 stdDevs_.push_back(new double[imgBandCount_]{});
                 covariances_.push_back(new double[imgBandCount_*imgBandCount_]{});
 
-                mp.emplaceTask(std::bind(&MpComputeStatistics::processDataCore<T>,
+                rp.emplaceTask(std::bind(&MpComputeStatistics::processDataCore<T>,
                         this,
                         std::placeholders::_1,
                         means_[i],
@@ -72,9 +108,7 @@ namespace RSTool {
 
             // step 3: 启动各个处理线程，并同步等待处理结果
             // 阻塞再此，直至所有线程结束
-            std::cout << "MpGdalIO Begin" << std::endl;
-            mp.run();
-            std::cout << "MpGdalIO End" << std::endl;
+            rp.run();
 
             // step 4: 等待所有子线程处理完，合并数据
             for (int i = 0; i < imgBandCount_; i++) {
@@ -132,9 +166,7 @@ namespace RSTool {
                     }
                 }
             }
-
-            return true;
-        }
+        } // end exec()
 
         template <typename T>
         void processDataCore(DataChunk<T> &data,
@@ -146,8 +178,6 @@ namespace RSTool {
             for (int i = 0; i < size; i++) {
                 int index = i*imgBandCount_;
                 pBuf1 = buf + index;
-
-                //continue;
 
                 for (int b = 0; b < imgBandCount_; b++) {
                     pBuf2 = buf + b;
@@ -167,22 +197,21 @@ namespace RSTool {
 
             } // end for elem
 
-        }
+        } // end processDataCore()
 
     private:
 
     private:
+        std::string infile_;
+        int blkSize_;
+        int threadCount_;
+
         GDALDataset *imgDataset_;
         int imgBandCount_;
-        int blkSize_;
-
-        int threadCount_;
 
         std::vector<double *> means_;
         std::vector<double *> stdDevs_;
         std::vector<double *> covariances_;
-
-        std::string infile_;
     };
 
 } // namespace RSTool
