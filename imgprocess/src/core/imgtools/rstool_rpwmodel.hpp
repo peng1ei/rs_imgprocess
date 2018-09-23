@@ -6,7 +6,6 @@
 #ifndef IMGPROCESS_RSTOOL_RPWMODEL_HPP
 #define IMGPROCESS_RSTOOL_RPWMODEL_HPP
 
-#include "rstool_common.h"
 #include "rstool_threadpool.h"
 
 namespace RSTool {
@@ -46,7 +45,7 @@ namespace RSTool {
 
                 for (int i = 0; i < consumerCount_; i++) {
                     consumerThreads_.emplace_back(std::thread(&MpRPWModel<T>::consumerTask,
-                                                              this, consumerTasks_[i], tasks_[i]));
+                            this, consumerTasks_[i], tasks_[i]));
                 }
 
                 // todo 如果不需要和主线程进行同步，是否可以分离线程？？？
@@ -145,10 +144,13 @@ namespace RSTool {
                     MpGDALRead<T>::condReadQueueNotFull_.notify_all();
 
                     // TODO 核心操作，由用户实现
+                    // TODO 对于“读-处理-写”模型算法，函数内部涉及写操作，需要用户显式调用 writeDataChunk 函数
                     func(data);
+                    // writeDataChunk(outdata); 由用户在 func 函数中调用，一般放在最后一条语句
                 }
             } // end consumerTask()
 
+            // 支持多线程写数据
             void writeDataChunk(DataChunk<T> &data) {
                 {
                     // 等待队列中有空闲位置
@@ -181,6 +183,7 @@ namespace RSTool {
         private:
             int blkNums_;
             std::vector<int> tasks_;
+
         private:
             int consumerCount_; // 消费者线程数量
             std::vector<std::thread> consumerThreads_;   // 消费者线程（块数据处理线程）

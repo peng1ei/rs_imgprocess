@@ -6,7 +6,6 @@
 #ifndef IMGPROCESS_RSTOOL_RPMODEL_HPP
 #define IMGPROCESS_RSTOOL_RPMODEL_HPP
 
-#include "rstool_common.h"
 #include "rstool_threadpool.h"
 
 namespace RSTool {
@@ -43,7 +42,7 @@ namespace RSTool {
             template <class Fn, class... Args>
             void emplaceTask(Fn &&fn, Args &&... args) {
                 consumerTasks_.emplace_back(std::bind(std::forward<Fn>(fn), std::placeholders::_1,
-                                                      std::forward<Args>(args)...));
+                        std::forward<Args>(args)...));
             }
 
             // 启动所有消费者线程，会阻塞调用者线程，直到所有消费者线程处理完成
@@ -145,6 +144,7 @@ namespace RSTool {
                     MpGDALRead<T>::condReadQueueNotFull_.notify_all();
 
                     // TODO 核心操作，由用户实现
+                    // 对于“读-处理”模型算法，函数内部不涉及写数据
                     func(data);
                 }
             } // end consumerTask()

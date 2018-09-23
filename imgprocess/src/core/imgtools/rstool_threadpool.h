@@ -175,6 +175,12 @@ namespace RSTool {
                 }
             }
 
+            ~MpGDALRead() {
+                for (auto &ds : datasets_) {
+                    GDALClose((GDALDatasetH)ds);
+                }
+            }
+
             /**
              * 给每个读线程添加任务
              * @param i         第 i 个读线程，索引从 0 开始
@@ -305,7 +311,6 @@ namespace RSTool {
 
         template <typename T>
         bool MpGDALWrite<T>::stop = false;
-
 
     } // namespace Mp
 
