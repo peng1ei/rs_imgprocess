@@ -220,6 +220,13 @@ namespace RSTool {
 
             int threadsCount() const { return pools_.size(); }
 
+            // 设置数据预处理函数
+            template <class Fn, class... Args>
+            void setDataPreProcess(Fn &&fn, Args &&... args) {
+                preProcessFunc_ = std::bind(std::forward<Fn>(fn), std::placeholders::_1,
+                        std::forward<Args>(args)...);
+            }
+
         private:
             std::string infile_;
             SpectralDimes specDims_;
@@ -229,6 +236,9 @@ namespace RSTool {
             //int poolsCount_; // 读线程 数量
             std::vector<ThreadPool> pools_;
             std::vector<GDALDataset*> datasets_;
+
+            // 可对数据进行预处理，如果读数据较快，处理数据较慢的化比较有用
+            std::function<void(DataChunk<T> &)> preProcessFunc_;
         };
 
         // $1
@@ -300,8 +310,8 @@ namespace RSTool {
                             //auto end = std::chrono::high_resolution_clock::now();
                             //std::chrono::duration<double, std::milli> elapsed = end-start;
                             //std::cout<< "write: " << elapsed.count() << std::endl;
-                        }
 
+                        }
                     }); // end lambad
                 }
             } // end MpGDALWrite()
