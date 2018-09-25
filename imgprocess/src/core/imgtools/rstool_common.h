@@ -38,6 +38,8 @@ namespace RSTool {
         int ySize() const { return ySize_; }
         void ySize(int value) { ySize_ = value; }
 
+        int spatialSize() const { return xSize_*ySize_; }
+
     protected:
         // 偏移量从 0 开始
         int xOff_;
@@ -99,6 +101,7 @@ namespace RSTool {
                 : SpatialDims(spatDims), SpectralDimes(specDims) {}
 
         int elemCount() const { return xSize_*ySize_*bands_.size();}
+
         void updateSpatial(int xOff, int yOff, int xSize, int ySize) {
             xOff_ = xOff;
             yOff_ = yOff;
@@ -207,8 +210,6 @@ namespace RSTool {
         const Interleave &interleave() const { return intl_; }
 
         T* data() { return data_; }
-
-        int spatialSize() const { return dims_.xSize() * dims_.ySize(); }
 
         void update(int xOff, int yOff, int xSize, int ySize, T *data) {
             dims_.updateSpatial(xOff, yOff, xSize, ySize);
