@@ -132,7 +132,7 @@ namespace RSTool {
             } // end assignWorkload()
 
             /**
-             * 消费者线程启动线程
+             * 消费者启动线程
              * @param funcCore  每个消费者线程的入口函数
              * @param tasks     每个消费者线程的工作量
              */
@@ -160,7 +160,7 @@ namespace RSTool {
                     // 对于“读-处理”模型算法，函数内部不涉及写数据
                     func(data);
                 }
-            } // end consumerTask()
+            }
 
         private:
             std::string infile_;

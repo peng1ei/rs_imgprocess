@@ -12,31 +12,45 @@ namespace RSTool {
 
     namespace Mp {
 
-        template <typename T>
+        template <typename T, typename OutType>
         class MpRPWModel {
         public:
 
+            /**
+             *
+             * @param infile                输入文件
+             * @param outfile               输出文件
+             * @param inSpecDims            输入文件的光谱范围
+             * @param inIntl                输入文件数据在内存的组织方式
+             * @param blkSize               指定处理的块大小
+             * @param readQueueMaxSize      TODO 对用户屏蔽，内部自动确定
+             * @param writeQeueueMaxSize
+             * @param readThreadsCount      读线程数，默认为 4
+             * @param writeThreadsCount     写线程数，默认为 1 TODO 修改为 4
+             */
             MpRPWModel(const std::string &infile, const std::string &outfile,
                     const SpectralDimes &inSpecDims, Interleave inIntl = Interleave::BIP,
-                      int blkSize = 128, int readQueueMaxSize = 16, int writeQeueueMaxSize = 16,
-                      int readThreadsCount = 4, int writeThreadsCount = 4)
+                      int blkSize = 128, int readQueueMaxSize = 8, int writeQeueueMaxSize = 8,
+                      int readThreadsCount = 4, int writeThreadsCount = 1)
+
                     : infile_(infile), outfile_(outfile), inSpecDims_(inSpecDims), inIntl_(inIntl),
                       blkSize_(blkSize), readQueueMaxSize_(readQueueMaxSize),
-                      readThreadsCount_(readThreadsCount_),
-                      mpRead_(infile_, inSpecDims_, inIntl_, readThreadsCount_),
-                      mpWrite_(outfile_, writeThreadsCount){
-
-                MpGDALRead<T>::readQueueMaxSize_ = readQueueMaxSize;
-                MpGDALWrite<T>::writeQueueMaxSize_ = writeQeueueMaxSize;
+                      readThreadsCount_(readThreadsCount),
+                      mpRead_(infile, inSpecDims, inIntl, readThreadsCount),
+                      mpWrite_(outfile, writeThreadsCount){
 
                 assignWorkload();
 
-            } // end MpGdalIO
+                // TODO 确定读写缓冲区队列大小
+                MpGDALRead<T>::readQueueMaxSize_ = 2*consumerCount_;
+                MpGDALWrite<OutType>::writeQueueMaxSize_ = 2*consumerCount_;
+
+            }
 
         public:
             int consumerCount() const { return consumerCount_; }
 
-            // 为每个消费者线程指定处理函数（因为每个线程所需要的参数可能不一样）
+            // 为每个消费者线程指定入口函数（因为每个线程所需要的参数可能不一样）
             template <class Fn, class... Args>
             void emplaceTask(Fn &&fn, Args &&... args) {
                 consumerTasks_.emplace_back(std::bind(std::forward<Fn>(fn), std::placeholders::_1,
@@ -45,10 +59,9 @@ namespace RSTool {
 
             // 启动所有消费者线程，会阻塞调用者线程，直到所有消费者线程处理完成
             void run() {
-                //assignWorkload();
 
                 for (int i = 0; i < consumerCount_; i++) {
-                    consumerThreads_.emplace_back(std::thread(&MpRPWModel<T>::consumerTask,
+                    consumerThreads_.emplace_back(std::thread(&MpRPWModel<T, OutType>::consumerTask,
                             this, consumerTasks_[i], tasks_[i]));
                 }
 
@@ -58,14 +71,16 @@ namespace RSTool {
                 }
 
                 {
-                    std::unique_lock<std::mutex> lk(MpGDALWrite<T>::mutexWriteQueue_);
-                    MpGDALWrite<T>::stop = true;
+                    // 停止写线程
+                    std::unique_lock<std::mutex> lk(MpGDALWrite<OutType>::mutexWriteQueue_);
+                    MpGDALWrite<OutType>::stop = true;
                 }
-                MpGDALWrite<T>::condWriteQueueNotEmpty_.notify_all();
+                MpGDALWrite<OutType>::condWriteQueueNotEmpty_.notify_all();
             }
 
         private:
 
+            // 为读线程和消费者线程分配工作
             void assignWorkload() {
                 GDALAllRegister();
 
@@ -82,7 +97,7 @@ namespace RSTool {
                 int yNUms = (imgYSize + blkSize_ - 1) / blkSize_;
                 blkNums_ = xNUms*yNUms;
 
-                consumerCount_ = NumThreads(1, blkNums_);
+                consumerCount_ = GetOptimalNumThreads(blkNums_);
 
                 // 分割文件(以方形块为单位)
                 std::vector<SpatialDims> spatDims;
@@ -128,6 +143,11 @@ namespace RSTool {
 
             } // end assignWorkload()
 
+            /**
+             * 消费者启动线程
+             * @param funcCore  每个消费者线程的入口函数
+             * @param tasks     每个消费者线程的工作量
+             */
             void consumerTask(std::function<void(DataChunk<T> &)> &&funcCore, int tasks) {
 
                 auto func = std::forward<std::function<void(DataChunk<T> &)>>(funcCore);
@@ -152,23 +172,25 @@ namespace RSTool {
                     func(data);
                     // writeDataChunk(outdata); 由用户在 func 函数中调用，一般放在最后一条语句
                 }
-            } // end consumerTask()
+            }
 
+        public:
             // 支持多线程写数据
-            void writeDataChunk(DataChunk<T> &data) {
+            void writeDataChunk(DataChunk<OutType> &&data) {
                 {
                     // 等待队列中有空闲位置
-                    std::unique_lock<std::mutex> lk(MpGDALWrite<T>::mutexWriteQueue_);
-                    while (MpGDALWrite<T>::writeQueue_.size() == MpGDALWrite<T>::writeQueueMaxSize_
+                    std::unique_lock<std::mutex> lk(MpGDALWrite<OutType>::mutexWriteQueue_);
+                    while (MpGDALWrite<OutType>::writeQueue_.size() == MpGDALWrite<OutType>::writeQueueMaxSize_
                         /*&& !MpGDALWrite<T>::stop*/) {
-                        MpGDALWrite<T>::condWriteQueueNotFull_.wait(lk);
+                        MpGDALWrite<OutType>::condWriteQueueNotFull_.wait(lk);
                     }
 
                     /*if (MpGDALWrite<T>::stop) return;*/
 
-                    MpGDALWrite<T>::writeQueue_.emplace(std::move(data));
+                    // 将准备输出的块数据移动到写缓冲队列中
+                    MpGDALWrite<OutType>::writeQueue_.emplace(std::move(data));
                 }
-                MpGDALWrite<T>::condWriteQueueNotEmpty_.notify_all();
+                MpGDALWrite<OutType>::condWriteQueueNotEmpty_.notify_all();
             }
 
         private:
@@ -182,7 +204,7 @@ namespace RSTool {
             int readThreadsCount_;
 
             MpGDALRead<T> mpRead_;
-            MpGDALWrite<T> mpWrite_;
+            MpGDALWrite<OutType> mpWrite_;
 
         private:
             int blkNums_;
