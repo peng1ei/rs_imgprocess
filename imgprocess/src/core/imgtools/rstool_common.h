@@ -48,6 +48,10 @@ namespace RSTool {
 
     // 光谱尺寸
     struct SpectralDimes {
+        /**
+         * 全波段处理，输入的波段数即被当做影像的波段总数
+         * @param bandCount 影像波段数
+         */
         SpectralDimes(int bandCount) : bands_(bandCount) {
             int i = 0;
             for (auto &value : bands_) {
@@ -55,13 +59,20 @@ namespace RSTool {
             }
         }
 
+        /**
+         * 波段子集选择，可选择待处理的波段范围
+         * @param bands 选择的波段子集，存的是待处理的波段索引，索引从 1 开始
+         */
         SpectralDimes(const std::vector<int> &bands)
                 : bands_(bands) {}
 
         //std::vector<int>& bands() { return bands_; }
         //const std::vector<int>& bands() const { return bands_; }
 
+        // 返回波段数
         int bandCount() { return static_cast<int>(bands_.size()); }
+
+        // 返回波段索引
         int* bandMap() { return bands_.data(); }
 
     protected:
@@ -71,20 +82,21 @@ namespace RSTool {
 
     // 数据的尺寸（包括空间维和光谱维）
     struct DataDims : public SpatialDims, public SpectralDimes {
-        // 用于处理全波段
+        // 全波段处理
         DataDims(int xOff, int yOff, int xSize, int ySize, int bandCount)
                 : SpatialDims(xOff, yOff, xSize, ySize), SpectralDimes(bandCount) {
         }
 
-        // 处理波段子集
+        // 全波段处理
+        DataDims(const SpatialDims &spatDims, int bandCount)
+                : SpatialDims(spatDims), SpectralDimes(bandCount) {}
+
+        // 波段子集处理
         DataDims(int xOff, int yOff, int xSize, int ySize, const std::vector<int> &bands)
                 : SpatialDims(xOff, yOff, xSize, ySize), SpectralDimes(bands) {}
 
         DataDims(const SpatialDims &spatDims, const SpectralDimes &specDims)
                 : SpatialDims(spatDims), SpectralDimes(specDims) {}
-
-        DataDims(const SpatialDims &spatDims, int bandCount)
-                : SpatialDims(spatDims), SpectralDimes(bandCount) {}
 
         int elemCount() const { return xSize_*ySize_*bands_.size();}
         void updateSpatial(int xOff, int yOff, int xSize, int ySize) {
@@ -102,9 +114,10 @@ namespace RSTool {
         BIP
     };
 
-    // 数据块，里面存放空间和光谱信息以及数据内容
+    // 数据块，里面存放数据块空间和光谱范围信息以及数据块内容
     template <typename T>
     struct DataChunk {
+        // 全波段处理
         DataChunk(int xOff, int yOff, int xSize, int ySize, int bandCount,
                   Interleave intl = Interleave::BIP)
                 : dims_(xOff, yOff, xSize, ySize, bandCount),
@@ -112,6 +125,14 @@ namespace RSTool {
             allocMemory();
         }
 
+        // 全波段处理
+        DataChunk(const SpatialDims &spatDims, int bandCount,
+                  Interleave intl = Interleave::BIP)
+                : dims_(spatDims, bandCount), intl_(intl) {
+            allocMemory();
+        }
+
+        // 波段子集处理
         DataChunk(int xOff, int yOff, int xSize, int ySize,
                   const std::vector<int> &bands,
                   Interleave intl = Interleave::BIP)
@@ -126,26 +147,19 @@ namespace RSTool {
             allocMemory();
         }
 
-        // 用于全波段处理
-        DataChunk(const SpatialDims &spatDims, int bandCount,
-                  Interleave intl = Interleave::BIP)
-                : dims_(spatDims, bandCount), intl_(intl) {
-            allocMemory();
-        }
-
         DataChunk(const DataDims &dims, Interleave intl = Interleave::BIP)
                 : dims_(dims), intl_(intl) {
             allocMemory();
         }
 
+        // 拷贝构造函数
         DataChunk(const DataChunk &other)
             : dims_(other.dims_), intl_(other.intl_){
             allocMemory();
             mempcpy(data_, other.data_, sizeof(T)*dims_.elemCount());
-
-            std::cout << "copy ctor" << std::endl;
         }
 
+        // 拷贝赋值函数
         DataChunk& operator= (const DataChunk &other) {
             if (this == &other) {
                 return *this;
@@ -157,8 +171,6 @@ namespace RSTool {
             intl_ = other.intl_;
             allocMemory();
             mempcpy(data_, other.data_, sizeof(T)*dims_.elemCount());
-
-            std::cout << "copy assignment" << std::endl;
         }
 
         // 移动构造函数
@@ -168,8 +180,6 @@ namespace RSTool {
             // 偷取
             data_ = rother.data_;
             rother.data_ = nullptr;
-
-            std::cout << "move ctor" << std::endl;
         }
 
         // 移动赋值函数
@@ -183,17 +193,19 @@ namespace RSTool {
             intl_ = rother.intl_;
             data_ = rother.data_;
             rother.data_ = nullptr;
-
-            std::cout << "move assignment" << std::endl;
         }
 
-        ~DataChunk() {
+        virtual ~DataChunk() {
             ReleaseArray(data_);
         }
 
     public:
+        DataDims &dims() { return dims_; }
         const DataDims &dims() const { return dims_; }
+
+        Interleave &interleave() { return intl_; }
         const Interleave &interleave() const { return intl_; }
+
         T* data() { return data_; }
 
         void update(int xOff, int yOff, int xSize, int ySize, T *data) {
@@ -243,40 +255,16 @@ namespace RSTool {
     template <typename T>
     class ReadDataChunk {
     public:
-        ReadDataChunk(GDALDataset *dataset) {
+        // 与 operator() (DataChunk<T> &data) 配合使用
+        ReadDataChunk(GDALDataset *dataset) : specDims_(0) {
             // todo 能否在构造函数中抛出异常 ???
             if (!dataset)
                 throw std::runtime_error("GDALDataset is nullptr.");
 
             dataset_ = dataset;
             dataType_ = toGDALDataType<T>();
-        }
-
-        ReadDataChunk(GDALDataset *dataset, const SpectralDimes &specDims,
-                Interleave intl = Interleave::BIP)
-            : specDims_(specDims), intl_(intl) {
-
-            // todo 能否在构造函数中抛出异常 ???
-            if (!dataset)
-                throw std::runtime_error("GDALDataset is nullptr.");
-
-            dataset_ = dataset;
-            dataType_ = toGDALDataType<T>();
-            bandCount_ = specDims_.bandCount();
-            bandMap_ = specDims_.bandMap();
-        }
-
-        // 全波段处理
-        ReadDataChunk(GDALDataset *dataset, int bandCount,
-                      Interleave intl = Interleave::BIP)
-                : bandCount_(bandCount), bandMap_(nullptr), intl_(intl), specDims_(0){
-
-            // todo 能否在构造函数中抛出异常 ???
-            if (!dataset)
-                throw std::runtime_error("GDALDataset is nullptr.");
-
-            dataset_ = dataset;
-            dataType_ = toGDALDataType<T>();
+            bandCount_ = 0;
+            bandMap_ = nullptr;
         }
 
         bool operator() (DataChunk<T> &data) {
@@ -328,6 +316,35 @@ namespace RSTool {
             }// end switch
 
             return true;
+        }
+
+    public:
+        // 全波段处理
+        ReadDataChunk(GDALDataset *dataset, int bandCount,
+                      Interleave intl = Interleave::BIP)
+                : bandCount_(bandCount), bandMap_(nullptr), intl_(intl), specDims_(0){
+
+            // todo 能否在构造函数中抛出异常 ???
+            if (!dataset)
+                throw std::runtime_error("GDALDataset is nullptr.");
+
+            dataset_ = dataset;
+            dataType_ = toGDALDataType<T>();
+        }
+
+        // 波段子集处理
+        ReadDataChunk(GDALDataset *dataset, const SpectralDimes &specDims,
+                      Interleave intl = Interleave::BIP)
+                : specDims_(specDims), intl_(intl) {
+
+            // todo 能否在构造函数中抛出异常 ???
+            if (!dataset)
+                throw std::runtime_error("GDALDataset is nullptr.");
+
+            dataset_ = dataset;
+            dataType_ = toGDALDataType<T>();
+            bandCount_ = specDims_.bandCount();
+            bandMap_ = specDims_.bandMap();
         }
 
         bool operator() (int xOff, int yOff, int xSize, int ySize, T *data) {
@@ -388,7 +405,7 @@ namespace RSTool {
     template <typename T>
     class WriteDataChunk {
     public:
-        WriteDataChunk(GDALDataset *dataset) {
+        WriteDataChunk(GDALDataset *dataset) : specDims_(0) {
             // todo 能否在构造函数中抛出异常 ???
             if (!dataset)
                 throw std::runtime_error("GDALDataset is nullptr.");
@@ -397,33 +414,6 @@ namespace RSTool {
             dataType_ = toGDALDataType<T>();
             bandCount_ = 0;
             bandMap_ = nullptr;
-        }
-
-        WriteDataChunk(GDALDataset *dataset, const SpectralDimes &specDims,
-                      Interleave intl = Interleave::BIP)
-                : specDims_(specDims), intl_(intl) {
-
-            // todo 能否在构造函数中抛出异常 ???
-            if (!dataset)
-                throw std::runtime_error("GDALDataset is nullptr.");
-
-            dataset_ = dataset;
-            dataType_ = toGDALDataType<T>();
-            bandCount_ = specDims_.bandCount();
-            bandMap_ = specDims_.bandMap();
-        }
-
-        // 全波段处理
-        WriteDataChunk(GDALDataset *dataset, int bandCount,
-                      Interleave intl = Interleave::BIP)
-                : bandCount_(bandCount), bandMap_(nullptr), intl_(intl), specDims_(0){
-
-            // todo 能否在构造函数中抛出异常 ???
-            if (!dataset)
-                throw std::runtime_error("GDALDataset is nullptr.");
-
-            dataset_ = dataset;
-            dataType_ = toGDALDataType<T>();
         }
 
         bool operator() (DataChunk<T> &data) {
@@ -473,6 +463,35 @@ namespace RSTool {
             }// end switch
 
             return true;
+        }
+
+    public:
+        // 波段子集处理
+        WriteDataChunk(GDALDataset *dataset, const SpectralDimes &specDims,
+                       Interleave intl = Interleave::BIP)
+                : specDims_(specDims), intl_(intl) {
+
+            // todo 能否在构造函数中抛出异常 ???
+            if (!dataset)
+                throw std::runtime_error("GDALDataset is nullptr.");
+
+            dataset_ = dataset;
+            dataType_ = toGDALDataType<T>();
+            bandCount_ = specDims_.bandCount();
+            bandMap_ = specDims_.bandMap();
+        }
+
+        // 全波段处理
+        WriteDataChunk(GDALDataset *dataset, int bandCount,
+                       Interleave intl = Interleave::BIP)
+                : bandCount_(bandCount), bandMap_(nullptr), intl_(intl), specDims_(0){
+
+            // todo 能否在构造函数中抛出异常 ???
+            if (!dataset)
+                throw std::runtime_error("GDALDataset is nullptr.");
+
+            dataset_ = dataset;
+            dataType_ = toGDALDataType<T>();
         }
 
         bool operator() (int xOff, int yOff, int xSize, int ySize, T *data) {
