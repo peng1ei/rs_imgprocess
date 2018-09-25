@@ -121,7 +121,7 @@ namespace RSTool {
                 int size = perThreadYBlkNums*xNUms; // 每一个线程需处理的任务量（块数）
                 for (int i = 0; i < size; i++) {
                     for (int j = 0; j < readThreadsCount_; j++) {
-                        mpRead_.enqueue(j, spatDims[j*perThreadYBlkNums+i]);
+                        mpRead_.enqueue(j, spatDims[j*size+i]);
                     }
                 }
 
