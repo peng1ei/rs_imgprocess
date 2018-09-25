@@ -36,9 +36,8 @@ namespace MatTool {
 
     // 判断矩阵是否可逆
     template <typename _MatrixType>
-    inline bool isInvertible(const _MatrixType &mat) {
-        Eigen::FullPivLU<_MatrixType> lu(mat);
-        return (bool)lu.isInvertible();
+    inline bool isInvertible(_MatrixType &mat) {
+        return Eigen::FullPivLU<_MatrixType>(mat).isInvertible();
     }
 
 }
