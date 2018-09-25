@@ -5,7 +5,6 @@
 #ifndef IMGPROCESS_RSTOOL_MPCOMPUTESTATS_HPP
 #define IMGPROCESS_RSTOOL_MPCOMPUTESTATS_HPP
 
-//#include "rstool_mpgdalio.hpp"
 #include "rstool_rpmodel.hpp"
 
 namespace RSTool {
@@ -29,6 +28,8 @@ namespace RSTool {
             for (auto &covariance : covariances_) {
                 ReleaseArray(covariance);
             }
+
+            GDALClose((GDALDatasetH)imgDataset_);
         }
 
         /**
@@ -91,8 +92,8 @@ namespace RSTool {
             Mp::MpRPModel<T> rp(infile_, SpectralDimes(imgBandCount_));
             threadCount_ = rp.consumerCount();
 
-            // setp 2: 设置每一个消费者线程核心处理函数
-            // 可以设置各个线程独立的参数
+            // setp 2: 设置每一个消费者线程入口函数
+            // 根据需要，可以设置各个线程独立的参数
             for (int i = 0; i < threadCount_; i++) {
                 means_.push_back(new double[imgBandCount_]{});
                 stdDevs_.push_back(new double[imgBandCount_]{});
@@ -170,10 +171,13 @@ namespace RSTool {
 
         template <typename T>
         void processDataCore(DataChunk<T> &data,
-                             double *mean, double *stdDev, double *covariance) {
+                             double *mean,
+                             double *stdDev,
+                             double *covariance) {
             int size = data.dims().xSize() * data.dims().ySize();
             T *pBuf1, *pBuf2;
             T *buf = data.data();
+            double *pCovar = nullptr;
 
             for (int i = 0; i < size; i++) {
                 int index = i*imgBandCount_;
@@ -189,7 +193,7 @@ namespace RSTool {
                     stdDev[b] += pBuf2[index]*pBuf2[index];
 
                     // sum of X*Y: x1*y1 + x2*y2 + x3*y3 + ...
-                    double *pCovar = covariance + b*imgBandCount_;
+                    pCovar = covariance + b*imgBandCount_;
                     for (int b1 = b; b1 < imgBandCount_; b1++) {
                         pCovar[b1] += pBuf1[b1]*pBuf2[index];
                     }
@@ -198,9 +202,6 @@ namespace RSTool {
             } // end for elem
 
         } // end processDataCore()
-
-    private:
-
     private:
         std::string infile_;
         int blkSize_;
