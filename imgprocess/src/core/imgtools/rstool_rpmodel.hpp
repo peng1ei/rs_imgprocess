@@ -27,11 +27,10 @@ namespace RSTool {
              */
             MpRPModel(const std::string &infile, const SpectralDimes &specDims,
                     Interleave intl = Interleave::BIP, int blkSize = 128,
-                    int readQueueMaxSize = 8, int readThreadsCount = 4)
+                    int readThreadsCount = 1)
 
                     : infile_(infile), specDims_(specDims), intl_(intl),
-                    blkSize_(blkSize), readQueueMaxSize_(readQueueMaxSize),
-                    readThreadsCount_(readThreadsCount),
+                    blkSize_(blkSize), readThreadsCount_(readThreadsCount),
                     mpRead_(infile, specDims, intl, readThreadsCount) {
 
                 assignWorkload();
@@ -40,6 +39,8 @@ namespace RSTool {
                 // 以 2倍 的消费者线程数为缓冲区队列大小
                 MpGDALRead<T>::readQueueMaxSize_ = 2*consumerCount_;
             }
+
+            void setReadQueueMaxSize(int value) { MpGDALRead<T>::readQueueMaxSize_ = value; }
 
         public:
             int consumerCount() const { return consumerCount_; }
@@ -59,7 +60,7 @@ namespace RSTool {
                             this, consumerTasks_[i], tasks_[i]));
                 }
 
-                // todo 如果不需要和主线程进行同步，是否可以分离线程？？？
+                // TODO 如果不需要和主线程进行同步，是否可以分离线程？？？
                 for (auto &consumer : consumerThreads_) {
                     consumer.join();
                 }
@@ -168,7 +169,6 @@ namespace RSTool {
             Interleave intl_;
 
             int blkSize_;
-            int readQueueMaxSize_;
             int readThreadsCount_;
 
             MpGDALRead<T> mpRead_;
