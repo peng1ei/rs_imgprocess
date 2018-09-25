@@ -5,6 +5,7 @@
 #ifndef IMGPROCESS_RSTOOL_THREADPOOL_H
 #define IMGPROCESS_RSTOOL_THREADPOOL_H
 
+#include "rstool_common.h"
 #include <vector>
 #include <queue>
 #include <memory>
@@ -16,20 +17,17 @@
 #include <stdexcept>
 #include <iostream>
 
-#include "rstool_common.h"
-
 namespace RSTool {
 
     namespace Mp {
 
         /**
-         * 根据 CPU核数,获取最佳线程数量
-         * @param minPerThread  每个线程最小处理的任务量
+         * 根据硬件CPU核数,获取最佳线程数量
          * @param numTasks      总共的任务量
+         * @param minPerThread  每个线程最小处理的任务量，默认为1
          * @return              返回最佳的线程数量
          */
-        inline int NumThreads(int minPerThread, int numTasks) {
-            // 根据 CPU核数 确定最佳线程数量
+        inline int GetOptimalNumThreads(int numTasks, int minPerThread = 1) {
             int hardThreads = std::thread::hardware_concurrency();
             int maxThreads = (numTasks + minPerThread - 1) / minPerThread;
             return std::min(hardThreads != 0 ? hardThreads : 1, maxThreads);
@@ -144,11 +142,13 @@ namespace RSTool {
                 worker.join();
         }
 
+        // 多线程读取影像文件，以数据块为基本单位
         template <typename T>
         class MpGDALRead {
         public:
+            // 线程间同步
             static std::queue<DataChunk<T>> readQueue_; // 用于缓存从磁盘读取的数据
-            static int readQueueMaxSize_;
+            static int readQueueMaxSize_; // 缓冲区最大Size
             static std::mutex mutexReadQueue_;
             static std::condition_variable condReadQueueNotEmpty_;
             static std::condition_variable condReadQueueNotFull_;
@@ -163,12 +163,12 @@ namespace RSTool {
              * @param specDims      指定光谱范围
              * @param intl          指定数据在内存中的组织方式
              * @param blkSize       指定分块大小
-             * @param poolsCount    指定需要并行读取的线程数量
+             * @param poolsCount    指定需要并行读取的线程数量，默认为4线程读
              */
             MpGDALRead(const std::string &infile, const SpectralDimes &specDims,
                     Interleave &intl = Interleave::BIP, int poolsCount = 4)
                 : infile_(infile), specDims_(specDims), intl_(intl),
-                poolsCount_(poolsCount), pools_(poolsCount_), datasets_(poolsCount_) {
+                pools_(poolsCount), datasets_(poolsCount) {
 
                 for (auto &ds : datasets_) {
                     ds = (GDALDataset*)GDALOpen(infile.c_str(), GA_ReadOnly);
@@ -190,7 +190,7 @@ namespace RSTool {
                 GDALDataset *ds = datasets_[i];
                 pools_[i].enqueue([this, ds, spatDims] {
 
-                    auto start = std::chrono::high_resolution_clock::now();
+                    //auto start = std::chrono::high_resolution_clock::now();
 
                     DataChunk<T> data(spatDims, specDims_, intl_);
                     ReadDataChunk<T> read(ds, specDims_, intl_);
@@ -199,17 +199,18 @@ namespace RSTool {
                         throw std::runtime_error("Reading data chunk is faild.");
                     }
 
-                    auto end = std::chrono::high_resolution_clock::now();
-                    std::chrono::duration<double, std::milli> elapsed = end-start;
-                    std::cout<< "read: " << elapsed.count() << std::endl;
+                    //auto end = std::chrono::high_resolution_clock::now();
+                    //std::chrono::duration<double, std::milli> elapsed = end-start;
+                    //std::cout<< "read: " << elapsed.count() << std::endl;
 
                     {
-                        // 等待队列中有空闲位置
+                        // 等待读缓冲队列中有空闲位置
                         std::unique_lock<std::mutex> lk(mutexReadQueue_);
                         while (readQueue_.size() == readQueueMaxSize_) {
                             condReadQueueNotFull_.wait(lk);
                         }
 
+                        // 移动数据块，避免数据间的复制
                         readQueue_.emplace(std::move(data));
                     }
                     condReadQueueNotEmpty_.notify_all();
@@ -217,13 +218,15 @@ namespace RSTool {
                 }); // end lambad
             } // end enqueue()
 
+            int threadsCount() const { return pools_.size(); }
+
         private:
             std::string infile_;
             SpectralDimes specDims_;
             Interleave intl_;
 
         private:
-            int poolsCount_; // 读线程 数量
+            //int poolsCount_; // 读线程 数量
             std::vector<ThreadPool> pools_;
             std::vector<GDALDataset*> datasets_;
         };
@@ -233,7 +236,7 @@ namespace RSTool {
         std::queue<DataChunk<T>> MpGDALRead<T>::readQueue_; // 用于缓存从磁盘读取的数据
 
         template <typename T>
-        int MpGDALRead<T>::readQueueMaxSize_ = 16;
+        int MpGDALRead<T>::readQueueMaxSize_ = 8;
 
         template <typename T>
         std::mutex MpGDALRead<T>::mutexReadQueue_;
@@ -245,11 +248,12 @@ namespace RSTool {
         std::condition_variable MpGDALRead<T>::condReadQueueNotFull_;
         // $1
 
+        // 多线程写数据，以块为基本单位
         template <typename T>
         class MpGDALWrite {
         public:
             static std::queue<DataChunk<T>> writeQueue_; // 用于缓存输出至磁盘的数据
-            static int writeQueueMaxSize_;
+            static int writeQueueMaxSize_;  // 写缓冲队列最大Size
             static std::mutex mutexWriteQueue_;
             static std::condition_variable condWriteQueueNotEmpty_;
             static std::condition_variable condWriteQueueNotFull_;
@@ -259,13 +263,10 @@ namespace RSTool {
             /**
              *
              * @param outfile       输出文件
-             * @param specDims      输出的光谱范围
-             * @param intl          输出文件在磁盘中的组织方式
-             * @param poolsCount    写线程数量
+             * @param poolsCount    写线程数量，默认为 4 线程写（TODO 修改为默认 1 线程写）
              */
             MpGDALWrite(const std::string &outfile, int poolsCount = 4)
-                    : outfile_(outfile), poolsCount_(poolsCount), pools_(poolsCount_),
-                    datasets_(poolsCount_) {
+                    : outfile_(outfile), pools_(poolsCount), datasets_(poolsCount) {
 
                 for (int i = 0; i < poolsCount; i++) {
                     GDALDataset *ds = (GDALDataset*)GDALOpen(outfile_.c_str(), GA_Update);
@@ -288,7 +289,7 @@ namespace RSTool {
                             }
                             MpGDALWrite<T>::condWriteQueueNotFull_.notify_all();
 
-                            auto start = std::chrono::high_resolution_clock::now();
+                            //auto start = std::chrono::high_resolution_clock::now();
 
                             // 各个写线程“随机”写数据块
                             WriteDataChunk<T> write(ds);
@@ -296,9 +297,9 @@ namespace RSTool {
                                 throw std::runtime_error("Writing data chunk is faild.");
                             }
 
-                            auto end = std::chrono::high_resolution_clock::now();
-                            std::chrono::duration<double, std::milli> elapsed = end-start;
-                            std::cout<< "write: " << elapsed.count() << std::endl;
+                            //auto end = std::chrono::high_resolution_clock::now();
+                            //std::chrono::duration<double, std::milli> elapsed = end-start;
+                            //std::cout<< "write: " << elapsed.count() << std::endl;
                         }
 
                     }); // end lambad
@@ -311,20 +312,36 @@ namespace RSTool {
                 }
             }
 
+            int threadsCount() const { return pools_.size(); }
+
         private:
             std::string outfile_;
 
         private:
-            int poolsCount_; // 写线程 数量
+            //int poolsCount_; // 写线程 数量
             std::vector<ThreadPool> pools_;
             std::vector<GDALDataset*> datasets_;
         };
 
+        // $2
         template <typename T>
-        int MpGDALWrite<T>::writeQueueMaxSize_ = 16;
+        std::queue<DataChunk<T>> MpGDALWrite<T>::writeQueue_;
+
+        template <typename T>
+        int MpGDALWrite<T>::writeQueueMaxSize_ = 8;
+
+        template <typename T>
+        std::mutex MpGDALWrite<T>::mutexWriteQueue_;
+
+        template <typename T>
+        std::condition_variable MpGDALWrite<T>::condWriteQueueNotEmpty_;
+
+        template <typename T>
+        std::condition_variable MpGDALWrite<T>::condWriteQueueNotFull_;
 
         template <typename T>
         bool MpGDALWrite<T>::stop = false;
+        // $2
 
     } // namespace Mp
 
