@@ -23,19 +23,15 @@ namespace RSTool {
              * @param inSpecDims            输入文件的光谱范围
              * @param inIntl                输入文件数据在内存的组织方式
              * @param blkSize               指定处理的块大小
-             * @param readQueueMaxSize      TODO 对用户屏蔽，内部自动确定
-             * @param writeQeueueMaxSize
-             * @param readThreadsCount      读线程数，默认为 4
-             * @param writeThreadsCount     写线程数，默认为 1 TODO 修改为 4
+             * @param readThreadsCount      读线程数，默认为 1
+             * @param writeThreadsCount     写线程数，默认为 1
              */
             MpRPWModel(const std::string &infile, const std::string &outfile,
                     const SpectralDimes &inSpecDims, Interleave inIntl = Interleave::BIP,
-                      int blkSize = 128, int readQueueMaxSize = 8, int writeQeueueMaxSize = 8,
-                      int readThreadsCount = 4, int writeThreadsCount = 1)
+                      int blkSize = 128, int readThreadsCount = 1, int writeThreadsCount = 1)
 
                     : infile_(infile), outfile_(outfile), inSpecDims_(inSpecDims), inIntl_(inIntl),
-                      blkSize_(blkSize), readQueueMaxSize_(readQueueMaxSize),
-                      readThreadsCount_(readThreadsCount),
+                      blkSize_(blkSize), readThreadsCount_(readThreadsCount),
                       mpRead_(infile, inSpecDims, inIntl, readThreadsCount),
                       mpWrite_(outfile, writeThreadsCount){
 
@@ -44,8 +40,10 @@ namespace RSTool {
                 // TODO 确定读写缓冲区队列大小
                 MpGDALRead<T>::readQueueMaxSize_ = 2*consumerCount_;
                 MpGDALWrite<OutType>::writeQueueMaxSize_ = 2*consumerCount_;
-
             }
+
+            void setReadQueueMaxSize(int value) { MpGDALRead<T>::readQueueMaxSize_ = value; }
+            void setWriteQueueMaxSize(int value) { MpGDALWrite<T>::writeQueueMaxSize_ = value; }
 
         public:
             int consumerCount() const { return consumerCount_; }
@@ -140,7 +138,7 @@ namespace RSTool {
                     tasks = perNums;
                 }
                 tasks_[consumerCount_-1] += leftsNums; // 剩余的任务全部交给最后一个消费者去做
-
+                GDALClose((GDALDatasetH)ds);
             } // end assignWorkload()
 
             /**
@@ -200,7 +198,6 @@ namespace RSTool {
             Interleave inIntl_;
 
             int blkSize_;
-            int readQueueMaxSize_;
             int readThreadsCount_;
 
             MpGDALRead<T> mpRead_;

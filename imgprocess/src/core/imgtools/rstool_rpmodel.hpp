@@ -22,8 +22,7 @@ namespace RSTool {
              * @param specDims          指定待处理的光谱范围
              * @param intl              指定在内存中以何种方式组织数据
              * @param blkSize           指定分块大小，默认 128
-             * @param readQueueMaxSize  指定读缓冲区中的队列最大大小，默认 8
-             * @param readThreadsCount  指定并行读取文件时的线程个数，默认 4
+             * @param readThreadsCount  指定并行读取文件时的线程个数，默认 1
              */
             MpRPModel(const std::string &infile, const SpectralDimes &specDims,
                     Interleave intl = Interleave::BIP, int blkSize = 128,
@@ -129,7 +128,7 @@ namespace RSTool {
                     tasks = perNums;
                 }
                 tasks_[consumerCount_-1] += leftsNums; // 剩余的任务全部交给最后一个消费者去做
-
+                GDALClose((GDALDatasetH)ds);
             } // end assignWorkload()
 
             /**
