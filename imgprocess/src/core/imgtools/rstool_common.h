@@ -208,6 +208,8 @@ namespace RSTool {
 
         T* data() { return data_; }
 
+        int spatialSize() const { return dims_.xSize() * dims_.ySize(); }
+
         void update(int xOff, int yOff, int xSize, int ySize, T *data) {
             dims_.updateSpatial(xOff, yOff, xSize, ySize);
             mempcpy(data_, data, sizeof(T)*dims_.elemCount());
@@ -546,7 +548,6 @@ namespace RSTool {
         int bandCount_;
         int *bandMap_;
     };
-
 
 } // namespace RSTool
 
