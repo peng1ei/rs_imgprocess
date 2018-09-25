@@ -163,10 +163,10 @@ namespace RSTool {
              * @param specDims      指定光谱范围
              * @param intl          指定数据在内存中的组织方式
              * @param blkSize       指定分块大小
-             * @param poolsCount    指定需要并行读取的线程数量，默认为4线程读
+             * @param poolsCount    指定需要并行读取的线程数量，默认为1线程读
              */
             MpGDALRead(const std::string &infile, const SpectralDimes &specDims,
-                    Interleave &intl = Interleave::BIP, int poolsCount = 4)
+                    Interleave &intl = Interleave::BIP, int poolsCount = 1)
                 : infile_(infile), specDims_(specDims), intl_(intl),
                 pools_(poolsCount), datasets_(poolsCount) {
 
@@ -220,25 +220,14 @@ namespace RSTool {
 
             int threadsCount() const { return pools_.size(); }
 
-            // 设置数据预处理函数
-            template <class Fn, class... Args>
-            void setDataPreProcess(Fn &&fn, Args &&... args) {
-                preProcessFunc_ = std::bind(std::forward<Fn>(fn), std::placeholders::_1,
-                        std::forward<Args>(args)...);
-            }
-
         private:
             std::string infile_;
             SpectralDimes specDims_;
             Interleave intl_;
 
         private:
-            //int poolsCount_; // 读线程 数量
             std::vector<ThreadPool> pools_;
             std::vector<GDALDataset*> datasets_;
-
-            // 可对数据进行预处理，如果读数据较快，处理数据较慢的化比较有用
-            std::function<void(DataChunk<T> &)> preProcessFunc_;
         };
 
         // $1
@@ -273,9 +262,9 @@ namespace RSTool {
             /**
              *
              * @param outfile       输出文件
-             * @param poolsCount    写线程数量，默认为 4 线程写（TODO 修改为默认 1 线程写）
+             * @param poolsCount    写线程数量，默认为 1
              */
-            MpGDALWrite(const std::string &outfile, int poolsCount = 4)
+            MpGDALWrite(const std::string &outfile, int poolsCount = 1)
                     : outfile_(outfile), pools_(poolsCount), datasets_(poolsCount) {
 
                 for (int i = 0; i < poolsCount; i++) {
@@ -328,7 +317,6 @@ namespace RSTool {
             std::string outfile_;
 
         private:
-            //int poolsCount_; // 写线程 数量
             std::vector<ThreadPool> pools_;
             std::vector<GDALDataset*> datasets_;
         };
