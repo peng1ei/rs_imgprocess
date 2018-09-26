@@ -12,7 +12,7 @@ namespace RSTool {
 
     namespace Mp {
 
-        template <typename T>
+        template <typename InDataType>
         class MpRPModel {
         public:
 
@@ -36,10 +36,10 @@ namespace RSTool {
 
                 // TODO 读缓冲区队列Size的确定
                 // 以 2倍 的消费者线程数为缓冲区队列大小
-                MpGDALRead<T>::readQueueMaxSize_ = 2*consumerCount_;
+                mpRead_.readQueueMaxSize_ = 2*consumerCount_;
             }
 
-            void setReadQueueMaxSize(int value) { MpGDALRead<T>::readQueueMaxSize_ = value; }
+            void setReadQueueMaxSize(int value) { mpRead_.readQueueMaxSize_ = value; }
 
         public:
             int consumerCount() const { return consumerCount_; }
@@ -55,7 +55,7 @@ namespace RSTool {
             // 启动所有消费者线程，会阻塞调用者线程，直到所有消费者线程处理完成
             void run() {
                 for (int i = 0; i < consumerCount_; i++) {
-                    consumerThreads_.emplace_back(std::thread(&MpRPModel<T>::consumerTask,
+                    consumerThreads_.emplace_back(std::thread(&MpRPModel<InDataType>::consumerTask,
                             this, consumerTasks_[i], tasks_[i]));
                 }
 
@@ -65,7 +65,7 @@ namespace RSTool {
                 }
             }
 
-        private:
+        protected:
 
             // 为读数据线程和消费者线程分配工作
             void assignWorkload() {
@@ -82,9 +82,9 @@ namespace RSTool {
 
                 int xNUms = (imgXSize + blkSize_ - 1) / blkSize_;
                 int yNUms = (imgYSize + blkSize_ - 1) / blkSize_;
-                blkNums_ = xNUms*yNUms;
+                int blkNums = xNUms*yNUms;
 
-                consumerCount_ = GetOptimalNumThreads(blkNums_);
+                consumerCount_ = GetOptimalNumThreads(blkNums);
 
                 // 分割文件(以方形块为单位)
                 std::vector<SpatialDims> spatDims;
@@ -120,8 +120,8 @@ namespace RSTool {
                 }
 
                 // 每个消费者线程需要处理的任务量（块数）
-                int perNums = blkNums_ / consumerCount_;
-                int leftsNums = blkNums_ % consumerCount_;
+                int perNums = blkNums / consumerCount_;
+                int leftsNums = blkNums % consumerCount_;
 
                 tasks_.resize(consumerCount_);
                 for (auto &tasks : tasks_) {
@@ -136,25 +136,25 @@ namespace RSTool {
              * @param funcCore  每个消费者线程的入口函数
              * @param tasks     每个消费者线程的工作量
              */
-            void consumerTask(std::function<void(DataChunk<T> &)> &&funcCore, int tasks) {
+            void consumerTask(std::function<void(DataChunk<InDataType> &)> &&funcCore, int tasks) {
 
-                auto func = std::forward<std::function<void(DataChunk<T> &)>>(funcCore);
+                auto func = std::forward<std::function<void(DataChunk<InDataType> &)>>(funcCore);
 
-                DataChunk<T> data(0,0,1,1,1); // 临时构造一个数据块
+                DataChunk<InDataType> data(0,0,1,1,1); // 临时构造一个数据块
                 for (int i = 0; i < tasks; ++i) {
 
                     {
                         // 如果缓冲区中没有数据,则等待数据的到来
-                        std::unique_lock<std::mutex> lk(MpGDALRead<T>::mutexReadQueue_);
-                        while (MpGDALRead<T>::readQueue_.empty()) {
-                            MpGDALRead<T>::condReadQueueNotEmpty_.wait(lk);
+                        std::unique_lock<std::mutex> lk(mpRead_.mutexReadQueue_);
+                        while (mpRead_.readQueue_.empty()) {
+                            mpRead_.condReadQueueNotEmpty_.wait(lk);
                         }
 
                         // 直接移走缓冲区中的数据，避免复制数据
-                        data = std::move(MpGDALRead<T>::readQueue_.front());
-                        MpGDALRead<T>::readQueue_.pop();
+                        data = std::move(mpRead_.readQueue_.front());
+                        mpRead_.readQueue_.pop();
                     }
-                    MpGDALRead<T>::condReadQueueNotFull_.notify_all();
+                    mpRead_.condReadQueueNotFull_.notify_all();
 
                     // TODO 核心操作，由用户实现
                     // 对于“读-处理”模型算法，函数内部不涉及写数据
@@ -162,7 +162,7 @@ namespace RSTool {
                 }
             }
 
-        private:
+        protected:
             std::string infile_;
             SpectralDimes specDims_;
             Interleave intl_;
@@ -170,12 +170,11 @@ namespace RSTool {
             int blkSize_;
             int readThreadsCount_;
 
-            MpGDALRead<T> mpRead_;
+            MpGDALRead<InDataType> mpRead_;
 
-        private:
-            int blkNums_;
+        protected:
             std::vector<int> tasks_;
-        private:
+        protected:
             int consumerCount_; // 消费者线程数量
             std::vector<std::thread> consumerThreads_;   // 消费者线程（块数据处理线程）
 
@@ -183,9 +182,8 @@ namespace RSTool {
             // 可以从主线程中接收不同的参数（主要是为了将主线程的任务并行化）
             // 块处理的核心功能，由使用者负责实现，可传入可调用对象：
             //      lambda、成员函数、全局函数、函数对象以及bind表达式等
-            std::vector< std::function<void(DataChunk<T> &)>> consumerTasks_;
+            std::vector< std::function<void(DataChunk<InDataType> &)>> consumerTasks_;
         };
-
 
     } // namespace Mp
 
