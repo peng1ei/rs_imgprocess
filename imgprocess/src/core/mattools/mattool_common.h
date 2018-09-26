@@ -34,9 +34,14 @@ namespace MatTool {
     using ExtVectord = Eigen::Map<Vectord>;
     using ExtRVectord = Eigen::Map<RVectord>;
 
-    // 判断矩阵是否可逆
+    /**
+     * 判断矩阵是否可逆
+     * @tparam _MatrixType  矩阵类型
+     * @param mat           待判断的矩阵（注意不能为“Ext***”类型，否则会修改原矩阵数据）
+     * @return 矩阵可逆就返回 true，不可逆就返回false
+     */
     template <typename _MatrixType>
-    inline bool isInvertible(_MatrixType &mat) {
+    inline bool isInvertible(const _MatrixType &mat) {
         return Eigen::FullPivLU<_MatrixType>(mat).isInvertible();
     }
 
