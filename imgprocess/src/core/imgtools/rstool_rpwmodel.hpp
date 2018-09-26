@@ -6,16 +6,15 @@
 #ifndef IMGPROCESS_RSTOOL_RPWMODEL_HPP
 #define IMGPROCESS_RSTOOL_RPWMODEL_HPP
 
-#include "rstool_threadpool.h"
+#include "rstool_rpmodel.hpp"
 
 namespace RSTool {
 
     namespace Mp {
 
-        template <typename T, typename OutType>
-        class MpRPWModel {
+        template <typename InDataType, typename OutDataType>
+        class MpRPWModel : public MpRPModel<InDataType> {
         public:
-
             /**
              *
              * @param infile                输入文件
@@ -27,196 +26,50 @@ namespace RSTool {
              * @param writeThreadsCount     写线程数，默认为 1
              */
             MpRPWModel(const std::string &infile, const std::string &outfile,
-                    const SpectralDimes &inSpecDims, Interleave inIntl = Interleave::BIP,
-                      int blkSize = 128, int readThreadsCount = 1, int writeThreadsCount = 1)
+                       const SpectralDimes &inSpecDims, Interleave inIntl = Interleave::BIP,
+                       int blkSize = 128, int readThreadsCount = 1, int writeThreadsCount = 1)
 
-                    : infile_(infile), outfile_(outfile), inSpecDims_(inSpecDims), inIntl_(inIntl),
-                      blkSize_(blkSize), readThreadsCount_(readThreadsCount),
-                      mpRead_(infile, inSpecDims, inIntl, readThreadsCount),
-                      mpWrite_(outfile, writeThreadsCount){
-
-                assignWorkload();
+                    : MpRPModel<InDataType>(infile, inSpecDims, inIntl, blkSize, readThreadsCount),
+                    outfile_(outfile), mpWrite_(outfile, writeThreadsCount) {
 
                 // TODO 确定读写缓冲区队列大小
-                MpGDALRead<T>::readQueueMaxSize_ = 2*consumerCount_;
-                MpGDALWrite<OutType>::writeQueueMaxSize_ = 2*consumerCount_;
+                mpWrite_.writeQueueMaxSize_ = 2*MpRPModel<InDataType>::consumerCount_;
             }
 
-            void setReadQueueMaxSize(int value) { MpGDALRead<T>::readQueueMaxSize_ = value; }
-            void setWriteQueueMaxSize(int value) { MpGDALWrite<T>::writeQueueMaxSize_ = value; }
+            void setWriteQueueMaxSize(int value) { mpWrite_.writeQueueMaxSize_ = value; }
 
-        public:
-            int consumerCount() const { return consumerCount_; }
-
-            // 为每个消费者线程指定入口函数（因为每个线程所需要的参数可能不一样）
-            template <class Fn, class... Args>
-            void emplaceTask(Fn &&fn, Args &&... args) {
-                consumerTasks_.emplace_back(std::bind(std::forward<Fn>(fn),
-                        std::placeholders::_1,
-                        std::forward<Args>(args)...));
-            }
-
-            // 启动所有消费者线程，会阻塞调用者线程，直到所有消费者线程处理完成
-            void run() {
-
-                for (int i = 0; i < consumerCount_; i++) {
-                    consumerThreads_.emplace_back(std::thread(&MpRPWModel<T, OutType>::consumerTask,
-                            this, consumerTasks_[i], tasks_[i]));
-                }
-
-                // todo 如果不需要和主线程进行同步，是否可以分离线程？？？
-                for (auto &consumer : consumerThreads_) {
-                    consumer.join();
-                }
-
-                {
-                    // 停止写线程
-                    std::unique_lock<std::mutex> lk(MpGDALWrite<OutType>::mutexWriteQueue_);
-                    MpGDALWrite<OutType>::stop = true;
-                }
-                MpGDALWrite<OutType>::condWriteQueueNotEmpty_.notify_all();
-            }
-
-        private:
-
-            // 为读线程和消费者线程分配工作
-            void assignWorkload() {
-                GDALAllRegister();
-
-                GDALDataset *ds = (GDALDataset*)GDALOpen(infile_.c_str(), GA_ReadOnly);
-                if (ds == nullptr) {
-                    throw std::runtime_error("GDALDataset open faild.");
-                }
-
-                int imgXSize = ds->GetRasterXSize();
-                int imgYSize = ds->GetRasterYSize();
-                int imgBandCount = ds->GetRasterCount();
-
-                int xNUms = (imgXSize + blkSize_ - 1) / blkSize_;
-                int yNUms = (imgYSize + blkSize_ - 1) / blkSize_;
-                blkNums_ = xNUms*yNUms;
-
-                consumerCount_ = GetOptimalNumThreads(blkNums_);
-
-                // 分割文件(以方形块为单位)
-                std::vector<SpatialDims> spatDims;
-                for (int i = 0; i < imgYSize; i += blkSize_) {
-                    int yBlockSize = blkSize_;
-                    if (i + blkSize_ > imgYSize) // 最下面的剩余块
-                        yBlockSize = imgYSize - i;
-
-                    for (int j = 0; j < imgXSize; j += blkSize_) {
-                        int xBlockSize = blkSize_;
-                        if (j + blkSize_ > imgXSize) // 最右侧的剩余块
-                            xBlockSize = imgXSize - j;
-
-                        spatDims.emplace_back(SpatialDims(j, i, xBlockSize, yBlockSize));
-                    } // end row
-                } // end col
-
-                // 分配 IO线程 工作量
-                int perThreadYBlkNums = yNUms / readThreadsCount_;
-                int leftYNums = yNUms % readThreadsCount_;
-                int size = perThreadYBlkNums*xNUms; // 每一个线程需处理的任务量（块数）
-                for (int i = 0; i < size; i++) {
-                    for (int j = 0; j < readThreadsCount_; j++) {
-                        mpRead_.enqueue(j, spatDims[j*size+i]);
-                    }
-                }
-
-                // 将剩余的块交给最后一个线程池 IO 处理
-                int leftNums = leftYNums*xNUms;
-                for (int i = 0; i < leftNums; i++) {
-                    mpRead_.enqueue(readThreadsCount_-1, spatDims[readThreadsCount_*size+i]);
-                }
-
-                // 每个 消费者线程 需要处理的任务量（块数）
-                int perNums = blkNums_ / consumerCount_;
-                int leftsNums = blkNums_ % consumerCount_;
-
-                tasks_.resize(consumerCount_);
-                for (auto &tasks : tasks_) {
-                    tasks = perNums;
-                }
-                tasks_[consumerCount_-1] += leftsNums; // 剩余的任务全部交给最后一个消费者去做
-                GDALClose((GDALDatasetH)ds);
-            } // end assignWorkload()
-
-            /**
-             * 消费者启动线程
-             * @param funcCore  每个消费者线程的入口函数
-             * @param tasks     每个消费者线程的工作量
-             */
-            void consumerTask(std::function<void(DataChunk<T> &)> &&funcCore, int tasks) {
-
-                auto func = std::forward<std::function<void(DataChunk<T> &)>>(funcCore);
-
-                DataChunk<T> data(0,0,1,1,1); // 临时构造一个数据块
-                for (int i = 0; i < tasks; ++i) {
-
-                    {
-                        // 如果缓冲区中没有数据,则等待数据的到来
-                        std::unique_lock<std::mutex> lk(MpGDALRead<T>::mutexReadQueue_);
-                        while (MpGDALRead<T>::readQueue_.empty()) {
-                            MpGDALRead<T>::condReadQueueNotEmpty_.wait(lk);
-                        }
-
-                        data = std::move(MpGDALRead<T>::readQueue_.front());
-                        MpGDALRead<T>::readQueue_.pop();
-                    }
-                    MpGDALRead<T>::condReadQueueNotFull_.notify_all();
-
-                    // TODO 核心操作，由用户实现
-                    // TODO 对于“读-处理-写”模型算法，函数内部涉及写操作，需要用户显式调用 writeDataChunk 函数
-                    func(data);
-                    // writeDataChunk(outdata); 由用户在 func 函数中调用，一般放在最后一条语句
-                }
-            }
-
-        public:
             // 支持多线程写数据
-            void writeDataChunk(DataChunk<OutType> &&data) {
+            void writeDataChunk(DataChunk<OutDataType> &&data) {
                 {
                     // 等待队列中有空闲位置
-                    std::unique_lock<std::mutex> lk(MpGDALWrite<OutType>::mutexWriteQueue_);
-                    while (MpGDALWrite<OutType>::writeQueue_.size() == MpGDALWrite<OutType>::writeQueueMaxSize_
+                    std::unique_lock<std::mutex> lk(mpWrite_.mutexWriteQueue_);
+                    while (mpWrite_.writeQueue_.size() == mpWrite_.writeQueueMaxSize_
                         /*&& !MpGDALWrite<T>::stop*/) {
-                        MpGDALWrite<OutType>::condWriteQueueNotFull_.wait(lk);
+                        mpWrite_.condWriteQueueNotFull_.wait(lk);
                     }
 
                     /*if (MpGDALWrite<T>::stop) return;*/
 
                     // 将准备输出的块数据移动到写缓冲队列中
-                    MpGDALWrite<OutType>::writeQueue_.emplace(std::move(data));
+                    mpWrite_.writeQueue_.emplace(std::move(data));
                 }
-                MpGDALWrite<OutType>::condWriteQueueNotEmpty_.notify_all();
+                mpWrite_.condWriteQueueNotEmpty_.notify_all();
+            }
+
+            void run() {
+                MpRPModel<InDataType>::run();
+
+                {
+                    // 停止写线程
+                    std::unique_lock<std::mutex> lk(mpWrite_.mutexWriteQueue_);
+                    mpWrite_.stop = true;
+                }
+                mpWrite_.condWriteQueueNotEmpty_.notify_all();
             }
 
         private:
-            std::string infile_;
             std::string outfile_;
-            SpectralDimes inSpecDims_;
-            Interleave inIntl_;
-
-            int blkSize_;
-            int readThreadsCount_;
-
-            MpGDALRead<T> mpRead_;
-            MpGDALWrite<OutType> mpWrite_;
-
-        private:
-            int blkNums_;
-            std::vector<int> tasks_;
-
-        private:
-            int consumerCount_; // 消费者线程数量
-            std::vector<std::thread> consumerThreads_;   // 消费者线程（块数据处理线程）
-
-            // 每个消费者线程所处理的核心函数对象
-            // 可以从主线程中接收不同的参数（主要是为了将主线程的任务并行化）
-            // 块处理的核心功能，由使用者负责实现，可传入可调用对象：
-            //      lambda、成员函数、全局函数、函数对象以及bind表达式等
-            std::vector< std::function<void(DataChunk<T> &)>> consumerTasks_;
+            MpGDALWrite<OutDataType> mpWrite_;
         };
 
     } // namespace Mp
