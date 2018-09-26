@@ -1,6 +1,7 @@
 //
 // Created by penglei on 18-9-12.
 //
+// 封装“Eigen”矩阵库，用到什么功能就封装什么功能
 
 #ifndef IMGPROCESS_MATTOOL_COMMON_H
 #define IMGPROCESS_MATTOOL_COMMON_H
@@ -45,6 +46,6 @@ namespace MatTool {
         return Eigen::FullPivLU<_MatrixType>(mat).isInvertible();
     }
 
-}
+} // namespace MatTool
 
 #endif //IMGPROCESS_MATTOOL_COMMON_H
