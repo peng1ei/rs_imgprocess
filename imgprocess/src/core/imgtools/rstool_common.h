@@ -39,6 +39,12 @@ namespace RSTool {
         void ySize(int value) { ySize_ = value; }
 
         int spatialSize() const { return xSize_*ySize_; }
+        void updateSpatial(int xOff, int yOff, int xSize, int ySize) {
+            xOff_ = xOff;
+            yOff_ = yOff;
+            xSize_ = xSize;
+            ySize_ = ySize;
+        }
 
     protected:
         // 偏移量从 0 开始
@@ -68,8 +74,8 @@ namespace RSTool {
         SpectralDimes(const std::vector<int> &bands)
                 : bands_(bands) {}
 
-        //std::vector<int>& bands() { return bands_; }
-        //const std::vector<int>& bands() const { return bands_; }
+        std::vector<int>& bands() { return bands_; }
+        const std::vector<int>& bands() const { return bands_; }
 
         // 返回波段数
         int bandCount() { return static_cast<int>(bands_.size()); }
@@ -97,17 +103,13 @@ namespace RSTool {
         DataDims(int xOff, int yOff, int xSize, int ySize, const std::vector<int> &bands)
                 : SpatialDims(xOff, yOff, xSize, ySize), SpectralDimes(bands) {}
 
+        DataDims(const SpatialDims &spatDims, const std::vector<int> &bands)
+                : SpatialDims(spatDims), SpectralDimes(bands) {}
+
         DataDims(const SpatialDims &spatDims, const SpectralDimes &specDims)
                 : SpatialDims(spatDims), SpectralDimes(specDims) {}
 
         int elemCount() const { return xSize_*ySize_*bands_.size();}
-
-        void updateSpatial(int xOff, int yOff, int xSize, int ySize) {
-            xOff_ = xOff;
-            yOff_ = yOff;
-            xSize_ = xSize;
-            ySize_ = ySize;
-        }
     };
 
     // 影像文件在磁盘中的存储格式或数据在内存中的组织的方式
@@ -140,6 +142,14 @@ namespace RSTool {
                   const std::vector<int> &bands,
                   Interleave intl = Interleave::BIP)
                 : dims_(xOff, yOff, xSize, ySize, bands),
+                  intl_(intl) {
+            allocMemory();
+        }
+
+        DataChunk(const SpatialDims &spatDims,
+                  const std::vector<int> &bands,
+                  Interleave intl = Interleave::BIP)
+                : dims_(spatDims, bands),
                   intl_(intl) {
             allocMemory();
         }
