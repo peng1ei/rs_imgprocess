@@ -148,7 +148,7 @@ namespace RSTool {
         public:
             // 线程间同步
             static std::queue<DataChunk<T>> readQueue_; // 用于缓存从磁盘读取的数据
-            static int readQueueMaxSize_; // 缓冲区最大Size
+            static int readQueueMaxSize_; // 读缓冲区最大Size
             static std::mutex mutexReadQueue_;
             static std::condition_variable condReadQueueNotEmpty_;
             static std::condition_variable condReadQueueNotFull_;
@@ -159,16 +159,15 @@ namespace RSTool {
 
             /**
              *
-             * @param infile        输入文件
-             * @param specDims      指定光谱范围
-             * @param intl          指定数据在内存中的组织方式
-             * @param blkSize       指定分块大小
-             * @param poolsCount    指定需要并行读取的线程数量，默认为1线程读
+             * @param infile            输入文件
+             * @param specDims          指定读取的光谱范围
+             * @param intl              指定读取的数据在内存中的组织方式
+             * @param readThreadsCount  指定需要读线程的数量，默认为1
              */
             MpGDALRead(const std::string &infile, const SpectralDimes &specDims,
-                    Interleave &intl = Interleave::BIP, int poolsCount = 1)
+                    Interleave &intl = Interleave::BIP, int readThreadsCount = 1)
                 : infile_(infile), specDims_(specDims), intl_(intl),
-                pools_(poolsCount), datasets_(poolsCount) {
+                pools_(readThreadsCount), datasets_(readThreadsCount) {
 
                 for (auto &ds : datasets_) {
                     ds = (GDALDataset*)GDALOpen(infile.c_str(), GA_ReadOnly);
@@ -261,13 +260,14 @@ namespace RSTool {
         public:
             /**
              *
-             * @param outfile       输出文件
-             * @param poolsCount    写线程数量，默认为 1
+             * @param outfile           输出文件
+             * @param writeThreadsCount 写线程数量，默认为 1
              */
-            MpGDALWrite(const std::string &outfile, int poolsCount = 1)
-                    : outfile_(outfile), pools_(poolsCount), datasets_(poolsCount) {
+            MpGDALWrite(const std::string &outfile, int writeThreadsCount = 1)
+                    : outfile_(outfile), pools_(writeThreadsCount),
+                    datasets_(writeThreadsCount) {
 
-                for (int i = 0; i < poolsCount; i++) {
+                for (int i = 0; i < writeThreadsCount; i++) {
                     GDALDataset *ds = (GDALDataset*)GDALOpen(outfile_.c_str(), GA_Update);
                     datasets_[i] = ds;
                     pools_[i].enqueue([ds] {
@@ -299,7 +299,6 @@ namespace RSTool {
                             //auto end = std::chrono::high_resolution_clock::now();
                             //std::chrono::duration<double, std::milli> elapsed = end-start;
                             //std::cout<< "write: " << elapsed.count() << std::endl;
-
                         }
                     }); // end lambad
                 }
