@@ -174,7 +174,7 @@ namespace RSTool {
                              double *mean,
                              double *stdDev,
                              double *covariance) {
-            int size = data.dims().xSize() * data.dims().ySize();
+            int size = data.dims().spatialSize();
             T *pBuf1, *pBuf2;
             T *buf = data.data();
             double *pCovar = nullptr;
