@@ -51,7 +51,8 @@ namespace RSTool {
             // 为每个消费者线程指定入口函数（因为每个线程所需要的参数可能不一样）
             template <class Fn, class... Args>
             void emplaceTask(Fn &&fn, Args &&... args) {
-                consumerTasks_.emplace_back(std::bind(std::forward<Fn>(fn), std::placeholders::_1,
+                consumerTasks_.emplace_back(std::bind(std::forward<Fn>(fn),
+                        std::placeholders::_1,
                         std::forward<Args>(args)...));
             }
 
