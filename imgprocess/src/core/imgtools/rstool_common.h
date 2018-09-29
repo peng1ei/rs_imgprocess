@@ -226,11 +226,10 @@ namespace RSTool {
             mempcpy(data_, data, sizeof(T)*dims_.elemCount());
         }
 
-        void replace(int xOff, int yOff, int xSize, int ySize, T *data) {
-            ReleaseArray(data_);
-            dims_.updateSpatial(xOff, yOff, xSize, ySize);
-            data_ = data;
-            data = nullptr;
+        void swap(DataChunk<T> &other) {
+            std::swap(dims_, other.dims_);
+            std::swap(intl_, other.intl_);
+            std::swap(data_, other.data_);
         }
 
     private:
