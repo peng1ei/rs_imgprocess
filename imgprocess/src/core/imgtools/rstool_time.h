@@ -30,7 +30,7 @@ namespace RSTool {
 
         /**
          * 用于计算代码运行的时间
-         * @tparam DurationType 类似于时间单位
+         * @tparam DurationType 类似于时间单位，默认以“毫秒”为单位
          */
         template <typename DurationType = ms>
         class AlgTime {
