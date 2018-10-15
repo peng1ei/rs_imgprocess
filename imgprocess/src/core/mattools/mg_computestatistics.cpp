@@ -22,8 +22,8 @@ namespace Mg {
         matCova_ = Mat::Matrixd::Zero(bandCount, bandCount);
         matCorr_ = Mat::Matrixd::Zero(bandCount, bandCount);
 
-        int tasks = (bandCount+1)*bandCount/2;
-        int threads = getOptimalNumThreads(tasks) - 1;
+        int tasks = (bandCount+1)*bandCount/2; // 总任务量
+        int threads = getOptimalNumThreads(tasks) - 1; // 最佳线程数
 
         std::vector<int> point;
         {
@@ -37,7 +37,6 @@ namespace Mg {
             point.push_back(bandCount);
         }
 
-        MgCube cube;
         MgBandMap bandMap(bandCount);
         std::vector<std::future<void>> fut(threads);
 
@@ -45,8 +44,10 @@ namespace Mg {
 
         int blkNum = mgDatasetPtr->blkNum();
         for (int k = 0; k < blkNum; ++k) {
-            //TODO 独立线程读取数据
-            mgDatasetPtr->readDataChunk(true, k, bandMap, cube);
+            MgCube cube;
+            if (!mgDatasetPtr->readDataChunk(true, k, bandMap, cube)) {
+                return false;
+            }
 
             // 异步执行
             for (int i = 0; i < threads; ++i) {
@@ -97,6 +98,7 @@ namespace Mg {
         return true;
     }
 
+    // 对总任务进行切割，寻找均匀切割点
     void MgComputeStatistics::findPoint(int begin, double meanNum,
             int n, int bands, std::vector<int> &point) {
         double sum = 0;
