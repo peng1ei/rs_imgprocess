@@ -11,6 +11,10 @@
 #include "mg_cube.h"
 #include <string>
 #include <memory>
+#include <future>
+#include <thread>
+#include <mutex>
+#include <condition_variable>
 
 class GDALDataset;
 

@@ -14,6 +14,12 @@ namespace Mg {
         MgCube();
         MgCube(int height, int width, int bands);
 
+        MgCube(const MgCube &other);
+        MgCube(MgCube &&other);
+
+        MgCube& operator = (const MgCube& other);
+        MgCube& operator = (MgCube&& other);
+
         Mat::Matrixd spectrum(int i, int j);
         void spectrum(int i, int j, const Mat::Matrixd &spec);
 

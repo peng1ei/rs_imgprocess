@@ -87,10 +87,6 @@ namespace Mg {
             const Mg::MgBandMap &bands, Mg::MgCube &cube) {
         int xImgOff, yImgOff, xBlkSize, yBlkSize;
         if (isBlock) {
-//            if (0 > xBlkOff || xBlkOff >= xBlkNum_ ||
-//                0 > yBlkOff || yBlkOff >= yBlkNum_)
-//                return false;
-
             yImgOff = yBlkOff*yBlkSize_;
             yBlkSize = yBlkSize_;
             if (yImgOff + yBlkSize_ > yImgSize_)
@@ -171,7 +167,7 @@ namespace Mg {
             yBlkSize = cube.height();
         }
 
-        if (std::is_same<OutScalar, double>::value) {
+        if (!std::is_same<OutScalar, double>::value) {
             // 将 double 类型数据转换为指定数据类型
             Mat::Matrix<OutScalar> &&tmp = (cube.data()).cast<OutScalar>();
             if (CPLErr::CE_Failure == ds_->RasterIO(GF_Write, xImgOff, yImgOff,
@@ -212,7 +208,7 @@ namespace Mg {
     bool MgDatasetManager::writeDataChunk(int xOff, int yOff,
             const MgBandMap &bands, MgCube &cube) {
 
-        if (std::is_same<OutScalar, double>::value) {
+        if (!std::is_same<OutScalar, double>::value) {
             // 将 double 类型数据转换为指定数据类型
             Mat::Matrix<OutScalar> &&tmp = (cube.data()).cast<OutScalar>();
             if (CPLErr::CE_Failure == ds_->RasterIO(GF_Read,
@@ -268,6 +264,5 @@ namespace Mg {
         assert(ds_ != nullptr);
         ds_->SetGeoTransform(geoTrans.get());
     }
-
 
 }// namespace Mg

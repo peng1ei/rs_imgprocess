@@ -29,6 +29,98 @@ namespace Mg {
                 dataPtr_.get(), bands_, height_*width_));
     }
 
+    MgCube::MgCube(const Mg::MgCube &other)
+        : height_(other.height_), width_(other.width_), bands_(other.bands_) {
+
+        dataPtr_.reset(new double[height_*width_*bands_]{},
+                       [](double*p){delete []p; p = nullptr;});
+
+        mempcpy(dataPtr_.get(), other.dataPtr_.get(),
+                sizeof(double)*height_*width_*bands_);
+
+        cube_.clear();
+        for (int i = 0; i < bands_; ++i) {
+            cube_.emplace_back(Mat::ExtMatrixd(
+                    dataPtr_.get()+height_*width_,
+                    height_, width_));
+        }
+
+        // 最后一个表示全部数据
+        cube_.emplace_back(Mat::ExtMatrixd(
+                dataPtr_.get(), bands_, height_*width_));
+
+    }
+
+    MgCube::MgCube(MgCube &&other)
+            : height_(other.height_), width_(other.width_), bands_(other.bands_),
+              dataPtr_(std::move(other.dataPtr_)), cube_(std::move(other.cube_)) {
+
+        other.cube_.clear();
+        other.height_ = 0;
+        other.width_ = 0;
+        other.bands_ = 0;
+
+        /*
+        cube_.clear();
+        for (int i = 0; i < bands_; ++i) {
+            cube_.emplace_back(Mat::ExtMatrixd(
+                    dataPtr_.get()+height_*width_,
+                    height_, width_));
+        }
+
+        // 最后一个表示全部数据
+        cube_.emplace_back(Mat::ExtMatrixd(
+                dataPtr_.get(), bands_, height_*width_));
+        */
+    }
+
+    MgCube& MgCube::operator = (const MgCube& other) {
+        height_ = other.height_;
+        width_ = other.width_;
+        bands_ = other.bands_;
+
+        dataPtr_.reset(new double[height_*width_*bands_]{},
+                       [](double*p){delete []p; p = nullptr;});
+
+        mempcpy(dataPtr_.get(), other.dataPtr_.get(),
+                sizeof(double)*height_*width_*bands_);
+
+        cube_.clear();
+        for (int i = 0; i < bands_; ++i) {
+            cube_.emplace_back(Mat::ExtMatrixd(
+                    dataPtr_.get()+height_*width_,
+                    height_, width_));
+        }
+
+        // 最后一个表示全部数据
+        cube_.emplace_back(Mat::ExtMatrixd(
+                dataPtr_.get(), bands_, height_*width_));
+    }
+
+    MgCube& MgCube::operator = (MgCube&& other) {
+        height_ = other.height_;
+        width_ = other.width_;
+        bands_ = other.bands_;
+
+        dataPtr_ = std::move(other.dataPtr_);
+        other.cube_.clear();
+        other.height_ = 0;
+        other.width_ = 0;
+        other.bands_ = 0;
+
+        cube_.clear();
+        for (int i = 0; i < bands_; ++i) {
+            cube_.emplace_back(Mat::ExtMatrixd(
+                    dataPtr_.get()+height_*width_,
+                    height_, width_));
+        }
+
+        // 最后一个表示全部数据
+        cube_.emplace_back(Mat::ExtMatrixd(
+                dataPtr_.get(), bands_, height_*width_));
+    }
+
+
     Mat::Matrixd MgCube::spectrum(int i, int j) {
         assert(i >= 0 && i < height_ && j >= 0 && j < width_);
         return cube_.back().col(i*width_+j);
