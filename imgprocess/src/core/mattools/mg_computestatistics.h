@@ -17,17 +17,17 @@ namespace Mg {
 
         bool run();
 
-        Mat::Matrixd& mean() { return vMean_; }
-        const Mat::Matrixd& mean() const { return vMean_; }
+        Mat::Matrixf& mean() { return vMean_; }
+        const Mat::Matrixf& mean() const { return vMean_; }
 
-        Mat::Matrixd& stdDev() { return vStdDev_; }
-        const Mat::Matrixd& stdDev() const { return vStdDev_; }
+        Mat::Matrixf& stdDev() { return vStdDev_; }
+        const Mat::Matrixf& stdDev() const { return vStdDev_; }
 
-        Mat::Matrixd& covariance() { return matCova_; }
-        const Mat::Matrixd& covariance() const { return matCova_; }
+        Mat::Matrixf& covariance() { return matCova_; }
+        const Mat::Matrixf& covariance() const { return matCova_; }
 
-        Mat::Matrixd& correlation() { return matCorr_; }
-        const Mat::Matrixd& correlation() const { return matCorr_; }
+        Mat::Matrixf& correlation() { return matCorr_; }
+        const Mat::Matrixf& correlation() const { return matCorr_; }
 
     private:
         /**
@@ -43,10 +43,10 @@ namespace Mg {
 
     private:
         std::string file_;
-        Mat::Matrixd vMean_;
-        Mat::Matrixd vStdDev_;
-        Mat::Matrixd matCova_;
-        Mat::Matrixd matCorr_;
+        Mat::Matrixf vMean_;
+        Mat::Matrixf vStdDev_;
+        Mat::Matrixf matCova_;
+        Mat::Matrixf matCorr_;
     };
 
 

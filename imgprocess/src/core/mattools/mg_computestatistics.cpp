@@ -17,10 +17,10 @@ namespace Mg {
         }
 
         int bandCount = mgDatasetPtr->getRasterCount();
-        vMean_   = Mat::Matrixd::Zero(bandCount, 1);
-        vStdDev_ = Mat::Matrixd::Zero(bandCount, 1);
-        matCova_ = Mat::Matrixd::Zero(bandCount, bandCount);
-        matCorr_ = Mat::Matrixd::Zero(bandCount, bandCount);
+        vMean_   = Mat::Matrixf::Zero(bandCount, 1);
+        vStdDev_ = Mat::Matrixf::Zero(bandCount, 1);
+        matCova_ = Mat::Matrixf::Zero(bandCount, bandCount);
+        matCorr_ = Mat::Matrixf::Zero(bandCount, bandCount);
 
         int tasks = (bandCount+1)*bandCount/2; // 总任务量
         int threads = getOptimalNumThreads(tasks) - 1; // 最佳线程数

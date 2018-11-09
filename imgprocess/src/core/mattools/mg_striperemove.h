@@ -19,7 +19,8 @@ namespace Mg {
     public:
         enum StriperRemoveType {
             PloyFit,            /* 多项式拟合滤波 */
-            MoveWindowWeight    /* 移动窗口(加权) */
+            MoveWindowWeight,   /* 移动窗口(加权) */
+            SecondaryGamma      /* 二次灰度系数校正法 */
         };
 
     public:
@@ -53,6 +54,13 @@ namespace Mg {
         template <typename OutScalar>
         bool moveWindowWeight();
 
+        // 二次灰度系数校正法
+        template <typename OutScalar>
+        bool secondaryGamma();
+
+        float meanExceptHightValue(const Mat::Matrixf &data, int hightValue);
+        //float meanExceptHightValue(const Mat::ExtMatrixf &data, int hightValue);
+
     private:
         std::string fileIn_;
         std::string fileOut_;
@@ -60,6 +68,9 @@ namespace Mg {
 
         StriperRemoveType method_;
         int n_;
+
+        //int startCol_;
+        //int endCol_;
 
         MgDatasetManagerPtr mgDatasetInPtr_;
         MgDatasetManagerPtr mgDatasetOutPtr_;

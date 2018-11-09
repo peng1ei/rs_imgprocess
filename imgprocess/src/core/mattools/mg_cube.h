@@ -20,12 +20,12 @@ namespace Mg {
         MgCube& operator = (const MgCube& other);
         MgCube& operator = (MgCube&& other);
 
-        Mat::Matrixd spectrum(int i, int j);
-        void spectrum(int i, int j, const Mat::Matrixd &spec);
+        Mat::Matrixf spectrum(int i, int j);
+        void spectrum(int i, int j, const Mat::Matrixf &spec);
 
-        Mat::ExtMatrixd& band(int i);
+        Mat::ExtMatrixf& band(int i);
 
-        Mat::ExtMatrixd& data();
+        Mat::ExtMatrixf& data();
         int width() const { return width_; }
         int height() const { return height_; }
         int bands() const { return bands_; }
@@ -36,10 +36,10 @@ namespace Mg {
         int height_;
         int width_;
         int bands_;
-        std::shared_ptr<double> dataPtr_;
+        std::shared_ptr<float> dataPtr_;
 
         // 数据矩阵，按 BSQ 存储
-        std::vector<Mat::ExtMatrixd> cube_;
+        std::vector<Mat::ExtMatrixf> cube_;
     };
 
 } // namespace Mg

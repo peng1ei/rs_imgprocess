@@ -5,24 +5,23 @@
 #ifndef IMGPROCESS_MG_COMMON_H
 #define IMGPROCESS_MG_COMMON_H
 
-
 // $1
 // 处理的时候全部用double，保存出去的时候进行数据类型转换，进行相应的计算
-#define SwitchGDALTypeProcess(outGdt) switch(outGdt) {\
+#define MgSwitchGDALTypeProcess(outGdt, func) switch(outGdt) {\
     case GDALDataType::GDT_Byte:\
-        return commonProcess<unsigned char>();\
+        return func<unsigned char>();\
     case GDALDataType::GDT_UInt16:\
-        return commonProcess<unsigned short>();\
+        return func<unsigned short>();\
     case GDALDataType::GDT_Int16:\
-        return commonProcess<short>();\
+        return func<short>();\
     case GDALDataType::GDT_UInt32:\
-        return commonProcess<unsigned int>();\
+        return func<unsigned int>();\
     case GDALDataType::GDT_Int32:\
-        return commonProcess<int>();\
+        return func<int>();\
     case GDALDataType::GDT_Float32:\
-        return commonProcess<float>();\
+        return func<float>();\
     case GDALDataType::GDT_Float64:\
-        return commonProcess<double>();\
+        return func<double>();\
     default:\
         return false;\
     }

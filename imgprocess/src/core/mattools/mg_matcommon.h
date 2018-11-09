@@ -9,23 +9,20 @@
 #include <vector>
 #include <memory>
 
-using namespace Eigen;
-
 namespace Mg {
 
     namespace Mat {
-
         // 数据存储在矩阵内部
-        using Matrixub = Eigen::Matrix<unsigned char, Dynamic, Dynamic, RowMajor>;
-        using Matrixus = Eigen::Matrix<unsigned short, Dynamic, Dynamic, RowMajor>;
-        using Matrixs  = Eigen::Matrix<short, Dynamic, Dynamic, RowMajor>;
-        using Matrixui = Eigen::Matrix<unsigned int, Dynamic, Dynamic, RowMajor>;
-        using Matrixi  = Eigen::Matrix<int, Dynamic, Dynamic, RowMajor>;
-        using Matrixf  = Eigen::Matrix<float, Dynamic, Dynamic, RowMajor>;
-        using Matrixd  = Eigen::Matrix<double, Dynamic, Dynamic, RowMajor>;
+        using Matrixub = Eigen::Matrix<unsigned char, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
+        using Matrixus = Eigen::Matrix<unsigned short, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
+        using Matrixs  = Eigen::Matrix<short, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
+        using Matrixui = Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
+        using Matrixi  = Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
+        using Matrixf  = Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
+        using Matrixd  = Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
 
         template <typename Scalar>
-        using Matrix  = Eigen::Matrix<Scalar, Dynamic, Dynamic, RowMajor>;
+        using Matrix  = Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
 
         // 数据存储在外部（比如存储在外部数组中）
         using ExtMatrixub = Eigen::Map<Matrixub>;

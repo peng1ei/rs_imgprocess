@@ -15,38 +15,38 @@ namespace Mg {
 
     MgCube::MgCube(int height, int width, int bands)
         : height_(height), width_(width), bands_(bands),
-        dataPtr_(new double[height_*width_*bands]{},
-                [](double*p){delete []p; p = nullptr;}) {
+        dataPtr_(new float[height_*width_*bands]{},
+                [](float*p){delete []p; p = nullptr;}) {
 
         for (int i = 0; i < bands_; ++i) {
-            cube_.emplace_back(Mat::ExtMatrixd(
+            cube_.emplace_back(Mat::ExtMatrixf(
                     dataPtr_.get()+i*height_*width_,
                     height_, width_));
         }
 
         // 最后一个表示全部数据
-        cube_.emplace_back(Mat::ExtMatrixd(
+        cube_.emplace_back(Mat::ExtMatrixf(
                 dataPtr_.get(), bands_, height_*width_));
     }
 
     MgCube::MgCube(const Mg::MgCube &other)
         : height_(other.height_), width_(other.width_), bands_(other.bands_) {
 
-        dataPtr_.reset(new double[height_*width_*bands_]{},
-                       [](double*p){delete []p; p = nullptr;});
+        dataPtr_.reset(new float[height_*width_*bands_]{},
+                       [](float*p){delete []p; p = nullptr;});
 
         mempcpy(dataPtr_.get(), other.dataPtr_.get(),
-                sizeof(double)*height_*width_*bands_);
+                sizeof(float)*height_*width_*bands_);
 
         cube_.clear();
         for (int i = 0; i < bands_; ++i) {
-            cube_.emplace_back(Mat::ExtMatrixd(
-                    dataPtr_.get()+height_*width_,
+            cube_.emplace_back(Mat::ExtMatrixf(
+                    dataPtr_.get()+i*height_*width_,
                     height_, width_));
         }
 
         // 最后一个表示全部数据
-        cube_.emplace_back(Mat::ExtMatrixd(
+        cube_.emplace_back(Mat::ExtMatrixf(
                 dataPtr_.get(), bands_, height_*width_));
 
     }
@@ -64,7 +64,7 @@ namespace Mg {
         cube_.clear();
         for (int i = 0; i < bands_; ++i) {
             cube_.emplace_back(Mat::ExtMatrixd(
-                    dataPtr_.get()+height_*width_,
+                    dataPtr_.get()+i*height_*width_,
                     height_, width_));
         }
 
@@ -79,21 +79,21 @@ namespace Mg {
         width_ = other.width_;
         bands_ = other.bands_;
 
-        dataPtr_.reset(new double[height_*width_*bands_]{},
-                       [](double*p){delete []p; p = nullptr;});
+        dataPtr_.reset(new float[height_*width_*bands_]{},
+                       [](float*p){delete []p; p = nullptr;});
 
         mempcpy(dataPtr_.get(), other.dataPtr_.get(),
-                sizeof(double)*height_*width_*bands_);
+                sizeof(float)*height_*width_*bands_);
 
         cube_.clear();
         for (int i = 0; i < bands_; ++i) {
-            cube_.emplace_back(Mat::ExtMatrixd(
-                    dataPtr_.get()+height_*width_,
+            cube_.emplace_back(Mat::ExtMatrixf(
+                    dataPtr_.get()+i*height_*width_,
                     height_, width_));
         }
 
         // 最后一个表示全部数据
-        cube_.emplace_back(Mat::ExtMatrixd(
+        cube_.emplace_back(Mat::ExtMatrixf(
                 dataPtr_.get(), bands_, height_*width_));
     }
 
@@ -110,33 +110,34 @@ namespace Mg {
 
         cube_.clear();
         for (int i = 0; i < bands_; ++i) {
-            cube_.emplace_back(Mat::ExtMatrixd(
-                    dataPtr_.get()+height_*width_,
+            cube_.emplace_back(Mat::ExtMatrixf(
+                    dataPtr_.get()+i*height_*width_,
                     height_, width_));
         }
 
         // 最后一个表示全部数据
-        cube_.emplace_back(Mat::ExtMatrixd(
+        cube_.emplace_back(Mat::ExtMatrixf
+        (
                 dataPtr_.get(), bands_, height_*width_));
     }
 
 
-    Mat::Matrixd MgCube::spectrum(int i, int j) {
+    Mat::Matrixf MgCube::spectrum(int i, int j) {
         assert(i >= 0 && i < height_ && j >= 0 && j < width_);
         return cube_.back().col(i*width_+j);
     }
 
-    void MgCube::spectrum(int i, int j, const Mat::Matrixd &spec) {
+    void MgCube::spectrum(int i, int j, const Mat::Matrixf &spec) {
         assert(i >= 0 && i < height_ && j >= 0 && j < width_);
         cube_.back().col(i*width_+j) = spec;
     }
 
-    Mat::ExtMatrixd& MgCube::band(int i) {
+    Mat::ExtMatrixf& MgCube::band(int i) {
         assert(i >= 0 && i < bands_);
         return cube_[i];
     }
 
-    Mat::ExtMatrixd& MgCube::data() {
+    Mat::ExtMatrixf& MgCube::data() {
         return cube_.back();
     }
 
@@ -144,18 +145,18 @@ namespace Mg {
         height_ = height;
         width_ = width;
         bands_ = bands;
-        dataPtr_.reset(new double[height_*width_*bands]{},
-                [](double*p){delete []p; p = nullptr;});
+        dataPtr_.reset(new float[height_*width_*bands]{},
+                [](float*p){delete []p; p = nullptr;});
 
         cube_.clear();
         for (int i = 0; i < bands_; ++i) {
-            cube_.emplace_back(Mat::ExtMatrixd(
-                    dataPtr_.get()+height_*width_,
+            cube_.emplace_back(Mat::ExtMatrixf(
+                    dataPtr_.get()+i*height_*width_,
                     height_, width_));
         }
 
         // 最后一个表示全部数据
-        cube_.emplace_back(Mat::ExtMatrixd(
+        cube_.emplace_back(Mat::ExtMatrixf(
                 dataPtr_.get(), bands_, height_*width_));
     }
 

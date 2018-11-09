@@ -3,7 +3,7 @@
 //
 
 #include "mg_datasetmanager.h"
-#include "gdal_priv.h"
+//#include "gdal_priv.h"
 #include <cassert>
 #include <type_traits>
 
@@ -106,7 +106,7 @@ namespace Mg {
         cube.resize(yBlkSize, xBlkSize, bands.size());
         if (CPLErr::CE_Failure == ds_->RasterIO(GF_Read, xImgOff, yImgOff,
                 xBlkSize, yBlkSize,
-                cube.data().data(), xBlkSize, yBlkSize, GDT_Float64,
+                cube.data().data(), xBlkSize, yBlkSize, GDT_Float32,
                 bands.size(), const_cast<int*>(bands.data()),
                 0, 0, 0)) {
             return false;
@@ -133,7 +133,7 @@ namespace Mg {
         cube.resize(ySize, xSize, bands.size());
         if (CPLErr::CE_Failure == ds_->RasterIO(GF_Read,
                 xOff, yOff, xSize, ySize,
-                cube.data().data(), xSize, ySize, GDT_Float64,
+                cube.data().data(), xSize, ySize, GDT_Float32,
                 bands.size(), const_cast<int*>(bands.data()),
                 0, 0, 0)) {
             return false;
@@ -141,68 +141,68 @@ namespace Mg {
 
         return true;
     }
-
-    template <typename OutScalar>
-    bool MgDatasetManager::writeDataChunk(bool isBlock, int xBlkOff, int yBlkOff,
-            const Mg::MgBandMap &bands, Mg::MgCube &cube) {
-        int xImgOff, yImgOff, xBlkSize, yBlkSize;
-        if (isBlock) {
-//            if (0 > xBlkOff || xBlkOff >= xBlkNum_ ||
-//                0 > yBlkOff || yBlkOff >= yBlkNum_)
+//
+//    template <typename OutScalar>
+//    bool MgDatasetManager::writeDataChunk(bool isBlock, int xBlkOff, int yBlkOff,
+//            const Mg::MgBandMap &bands, Mg::MgCube &cube) {
+//        int xImgOff, yImgOff, xBlkSize, yBlkSize;
+//        if (isBlock) {
+////            if (0 > xBlkOff || xBlkOff >= xBlkNum_ ||
+////                0 > yBlkOff || yBlkOff >= yBlkNum_)
+////                return false;
+//
+//            yImgOff = yBlkOff*yBlkSize_;
+//            yBlkSize = cube.height();
+////            if (yImgOff + yBlkSize_ > yImgSize_)
+////                yBlkSize = yImgSize_ - yImgOff;
+//
+//            xImgOff = xBlkOff*xBlkSize_;
+//            xBlkSize = cube.width();
+////            if (xImgOff + xBlkSize_ > xImgSize_)
+////                xBlkSize = xImgSize_ - xImgOff;
+//        } else {
+//            xImgOff = 0;
+//            yImgOff = 0;
+//            xBlkSize = cube.width();
+//            yBlkSize = cube.height();
+//        }
+//
+//        if (!std::is_same<OutScalar, double>::value) {
+//            // 将 double 类型数据转换为指定数据类型
+//            Mat::Matrix<OutScalar> &&tmp = (cube.data()).cast<OutScalar>();
+//            if (CPLErr::CE_Failure == ds_->RasterIO(GF_Write, xImgOff, yImgOff,
+//                    xBlkSize, yBlkSize,
+//                    tmp.data(), xBlkSize, yBlkSize, gdt_,
+//                    bands.size(), const_cast<int*>(bands.data()), 0, 0, 0)) {
 //                return false;
-
-            yImgOff = yBlkOff*yBlkSize_;
-            yBlkSize = cube.height();
-//            if (yImgOff + yBlkSize_ > yImgSize_)
-//                yBlkSize = yImgSize_ - yImgOff;
-
-            xImgOff = xBlkOff*xBlkSize_;
-            xBlkSize = cube.width();
-//            if (xImgOff + xBlkSize_ > xImgSize_)
-//                xBlkSize = xImgSize_ - xImgOff;
-        } else {
-            xImgOff = 0;
-            yImgOff = 0;
-            xBlkSize = cube.width();
-            yBlkSize = cube.height();
-        }
-
-        if (!std::is_same<OutScalar, double>::value) {
-            // 将 double 类型数据转换为指定数据类型
-            Mat::Matrix<OutScalar> &&tmp = (cube.data()).cast<OutScalar>();
-            if (CPLErr::CE_Failure == ds_->RasterIO(GF_Write, xImgOff, yImgOff,
-                    xBlkSize, yBlkSize,
-                    tmp.data(), xBlkSize, yBlkSize, gdt_,
-                    bands.size(), const_cast<int*>(bands.data()), 0, 0, 0)) {
-                return false;
-            }
-
-            return true;
-        }
-
-        if (CPLErr::CE_Failure == ds_->RasterIO(GF_Write, xImgOff, yImgOff,
-                xBlkSize, yBlkSize,
-                cube.data().data(), xBlkSize, yBlkSize, gdt_,
-                bands.size(), const_cast<int*>(bands.data()), 0, 0, 0)) {
-            return false;
-        }
-
-        return true;
-    }
-
-    template <typename OutScalar>
-    bool MgDatasetManager::writeDataChunk(bool isBlock, int blkIndex,
-            const Mg::MgBandMap &bands, Mg::MgCube &cube) {
-        if (isBlock) {
-            assert(blkIndex >= 0 && blkIndex < xBlkNum_*yBlkNum_);
-            int xBlkOff = blkIndex % xBlkNum_;
-            int yBlkOff = blkIndex / xBlkNum_;
-            return writeDataChunk<OutScalar>(isBlock, xBlkOff, yBlkOff, bands, cube);
-        } else {
-            assert(blkIndex == 0);
-            return writeDataChunk<OutScalar>(isBlock, 0, 0, bands, cube);
-        }
-    }
+//            }
+//
+//            return true;
+//        }
+//
+//        if (CPLErr::CE_Failure == ds_->RasterIO(GF_Write, xImgOff, yImgOff,
+//                xBlkSize, yBlkSize,
+//                cube.data().data(), xBlkSize, yBlkSize, gdt_,
+//                bands.size(), const_cast<int*>(bands.data()), 0, 0, 0)) {
+//            return false;
+//        }
+//
+//        return true;
+//    }
+//
+//    template <typename OutScalar>
+//    bool MgDatasetManager::writeDataChunk(bool isBlock, int blkIndex,
+//            const Mg::MgBandMap &bands, Mg::MgCube &cube) {
+//        if (isBlock) {
+//            assert(blkIndex >= 0 && blkIndex < xBlkNum_*yBlkNum_);
+//            int xBlkOff = blkIndex % xBlkNum_;
+//            int yBlkOff = blkIndex / xBlkNum_;
+//            return writeDataChunk<OutScalar>(isBlock, xBlkOff, yBlkOff, bands, cube);
+//        } else {
+//            assert(blkIndex == 0);
+//            return writeDataChunk<OutScalar>(isBlock, 0, 0, bands, cube);
+//        }
+//    }
 
     template <typename OutScalar>
     bool MgDatasetManager::writeDataChunk(int xOff, int yOff,
